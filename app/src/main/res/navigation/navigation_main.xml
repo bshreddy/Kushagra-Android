@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation_main"
+    app:startDestination="@id/navigation_crop">
+
+    <fragment
+        android:id="@+id/navigation_crop"
+        android:name="com.project.crop_prediction.ui.CropFragment"
+        android:label="Your Crops"
+        tools:layout="@layout/fragment_crop" />
+
+    <fragment
+        android:id="@+id/navigation_disease"
+        android:name="com.project.crop_prediction.ui.DiseaseFragment"
+        android:label="Crop Diseases"
+        tools:layout="@layout/fragment_disease" />
+
+    <fragment
+        android:id="@+id/navigation_forum"
+        android:name="com.project.crop_prediction.ui.ForumFragment"
+        android:label="Grievance Portal"
+        tools:layout="@layout/fragment_forum" />
+
+    <fragment
+        android:id="@+id/navigation_prices"
+        android:name="com.project.crop_prediction.ui.PricesFragment"
+        android:label="Market Prices"
+        tools:layout="@layout/fragment_prices" />
+
+</navigation>

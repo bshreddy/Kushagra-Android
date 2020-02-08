@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "648831909162",
+    "firebase_url": "https://rurathon-cvr-2019.firebaseio.com",
+    "project_id": "rurathon-cvr-2019",
+    "storage_bucket": "rurathon-cvr-2019.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:648831909162:android:322949e30e64c5394f3253",
+        "android_client_info": {
+          "package_name": "com.project.crop_prediction"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "648831909162-p75vdg3tgqn9a4n3hoojsvpn4eg6ckpi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.project.crop_prediction",
+            "certificate_hash": "7591cb6f0a0fc79e94e9532d8551fbd30fb516c7"
+          }
+        },
+        {
+          "client_id": "648831909162-tul920i4mv9pdgjaiij6s0peqqplggiq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADVxRMD3xu0DyxI9s1jyBsF6teRX0bNpw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "648831909162-tul920i4mv9pdgjaiij6s0peqqplggiq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "648831909162-g3of2fl2r05osbs5i1v08em2umr56tkf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.project.CropPrediction"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

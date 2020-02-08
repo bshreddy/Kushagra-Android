@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="176dp"
+    android:background="@drawable/bg_nav_header"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
+    android:theme="@style/ThemeOverlay.MaterialComponents.Dark">
+
+    <ImageView
+        android:id="@+id/nav_header_dp"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:contentDescription="Navigation header"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/ic_header_account"
+        android:background="@drawable/circular_image"/>
+
+    <TextView
+        android:id="@+id/nav_header_uname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:text="Android Studio"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+
+    <TextView
+        android:id="@+id/nav_header_uemail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="android.studio@android.com" />
+
+</LinearLayout>
