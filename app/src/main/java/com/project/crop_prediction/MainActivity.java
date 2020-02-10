@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -26,12 +27,13 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.internal.InternalTokenResult;
 import com.project.crop_prediction.model.Prediction;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "MainActivity";
 
@@ -39,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     private MaterialToolbar toolbar;
     private DrawerLayout drawerLayout;
     private BottomNavigationView bottomNav;
+
+
+    Button btnCapture;
 
     private FirebaseUser user;
 
@@ -65,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(bottomNav, navController);
 
+       btnCapture=(Button)findViewById(R.id.fab);
+       btnCapture.setOnClickListener(this);
+
 
         user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -82,6 +90,13 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    //setting image button action
+    @Override
+    public void onClick(View view) {
+        Intent intent=new Intent(this,CaptureActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -107,6 +122,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+
+
+
+
 
     private void showUserLogin() {
         List<AuthUI.IdpConfig> providers = Arrays.asList(
