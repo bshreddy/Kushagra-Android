@@ -61,6 +61,7 @@
                 android:layout_gravity="bottom"
                 android:clickable="false"
                 app:backgroundTint="@color/colorPrimary"
+                android:background="@android:color/transparent"
                 app:contentInsetStart="0dp"
                 app:contentInsetStartWithNavigation="0dp"
                 app:fabAlignmentMode="center">

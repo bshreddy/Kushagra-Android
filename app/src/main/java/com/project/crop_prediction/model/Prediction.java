@@ -52,10 +52,10 @@ public class Prediction {
         }
     }
 
-    int confidences[];
-    int predicted_idx;
-    Kind kind;
-    String classes[];
+    public double confidences[];
+    public int predicted_idx;
+    public Kind kind;
+    public String classes[];
 
     public static void predict(Context context, Kind kind, Bitmap bitmap, final PredictionListener callback) throws JSONException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -74,7 +74,7 @@ public class Prediction {
                             Kind kind = (obj.getString("kind").equalsIgnoreCase("crop")) ? Kind.crop : Kind.disease;
 
                             JSONArray cnf = obj.getJSONArray("cnf");
-                            int confidences[] = new int[10];
+                            double confidences[] = new double[10];
 
                             for(int i = 0; i < 10; i++)
                                 confidences[i] = cnf.getInt(i);
@@ -110,11 +110,20 @@ public class Prediction {
         VolleySingleton.getInstance(context).addToRequestQueue(request);
     }
 
-    private Prediction(int predicted_idx, int confidences[], Kind kind) {
+    public Prediction(int predicted_idx, double confidences[], Kind kind) {
         this.predicted_idx = predicted_idx;
         this.confidences = confidences;
         this.kind = kind;
         this.classes = (kind == Kind.crop) ? cropClasses : diseaseClasses;
+    }
+
+    public String getPredictedClass() {
+        return classes[predicted_idx];
+    }
+
+    public String getPredictedName() {
+        String pClass = getPredictedClass();
+        return pClass.substring(0, 1).toUpperCase() + pClass.substring(1);
     }
 
 }

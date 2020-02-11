@@ -7,15 +7,15 @@
 
     <fragment
         android:id="@+id/navigation_crop"
-        android:name="com.project.crop_prediction.ui.CropFragment"
+        android:name="com.project.crop_prediction.ui.recents.RecentsFragment"
         android:label="Your Crops"
-        tools:layout="@layout/fragment_crop" />
+        tools:layout="@layout/fragment_recents" />
 
     <fragment
         android:id="@+id/navigation_disease"
-        android:name="com.project.crop_prediction.ui.DiseaseFragment"
+        android:name="com.project.crop_prediction.ui.recents.RecentsFragment"
         android:label="Crop Diseases"
-        tools:layout="@layout/fragment_disease" />
+        tools:layout="@layout/fragment_recents" />
 
     <fragment
         android:id="@+id/navigation_forum"
