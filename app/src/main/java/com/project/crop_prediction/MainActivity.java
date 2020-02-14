@@ -1,8 +1,9 @@
 package com.project.crop_prediction;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -19,7 +20,6 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.IdpResponse;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -28,20 +28,22 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
-import com.project.crop_prediction.ui.recents.RecentsFragment;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener {
+public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener, View.OnClickListener {
 
     private static final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 1008;
+    private static final int RC_CAPTURE = 1;
+    private static final int RC_PERMISSIONS = 100;
 
     private MaterialToolbar toolbar;
     private DrawerLayout drawerLayout;
     private BottomNavigationView bottomNav;
     private FloatingActionButton fab;
+    private NavController navController;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
@@ -74,12 +76,13 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         toggle.syncState();
 
         fab = findViewById(R.id.fab);
+        fab.setOnClickListener(this);
 
         bottomNav = findViewById(R.id.bottom_navigation);
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_crop, R.id.navigation_disease, R.id.navigation_forum, R.id.navigation_prices)
                 .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(bottomNav, navController);
 
@@ -166,6 +169,47 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             if(snackbar != null)
                 snackbar.show();
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == RC_PERMISSIONS)
+        {
+            boolean granted = true;
+            for(int res: grantResults)
+                granted = granted && (res == PackageManager.PERMISSION_GRANTED);
+
+            if (granted)
+                startActivityForResult(new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), RC_CAPTURE);
+            else
+                Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        int destId = navController.getCurrentDestination().getId();
+        switch (destId) {
+            case R.id.navigation_crop:
+            case R.id.navigation_disease:
+
+                if (arePermissionsGranted())
+                    startActivityForResult(new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), RC_CAPTURE);
+                else
+                    requestPermissions(new String[]{ android.Manifest.permission.CAMERA,
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE }, RC_PERMISSIONS);
+            default:
+                break;
+        }
+    }
+
+    private boolean arePermissionsGranted() {
+        return (checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
     }
 }
 
