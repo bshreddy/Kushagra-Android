@@ -9,13 +9,21 @@
         android:id="@+id/navigation_crop"
         android:name="com.project.crop_prediction.ui.recents.RecentsFragment"
         android:label="Your Crops"
-        tools:layout="@layout/fragment_recents" />
+        tools:layout="@layout/fragment_recents" >
+        <argument
+            android:name="kind"
+            android:defaultValue="crop" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_disease"
         android:name="com.project.crop_prediction.ui.recents.RecentsFragment"
         android:label="Crop Diseases"
-        tools:layout="@layout/fragment_recents" />
+        tools:layout="@layout/fragment_recents" >
+        <argument
+            android:name="kind"
+            android:defaultValue="disease" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_forum"

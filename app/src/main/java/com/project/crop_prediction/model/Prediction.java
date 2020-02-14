@@ -3,10 +3,18 @@ package com.project.crop_prediction.model;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import androidx.annotation.NonNull;
+
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.google.gson.Gson;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.project.crop_prediction.network.VolleyMultipartRequest;
 import com.project.crop_prediction.network.VolleySingleton;
 
@@ -15,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,14 +50,10 @@ public class Prediction {
     public enum Kind {
         crop("crop"), disease("disease");
 
-        private String rawValue;
+        public String rawValue;
 
         Kind(String rawValue) {
             this.rawValue = rawValue;
-        }
-
-        String getRawValue() {
-            return rawValue;
         }
     }
 
@@ -126,4 +131,14 @@ public class Prediction {
         return pClass.substring(0, 1).toUpperCase() + pClass.substring(1);
     }
 
+    @NonNull
+    @Override
+    public String toString() {
+        String confString = "{";
+        for(int i = 0; i < confidences.length; i++)
+            confString += confidences[i] + ", ";
+        confString += "\b\b}";
+
+        return "Prediction(predicted_idx: " + predicted_idx + ", confidences" + confString + ", kind: " + kind.rawValue + ")";
+    }
 }

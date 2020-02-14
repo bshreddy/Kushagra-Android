@@ -3,9 +3,8 @@ package com.project.crop_prediction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,11 +26,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.project.crop_prediction.ui.recents.RecentsFragment;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener {
 
     private static final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 1008;
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
     private FloatingActionButton fab;
 
+    private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
 
     @Override
@@ -49,14 +52,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         setupUI();
+        setupFirebase();
+    }
 
-        user = FirebaseAuth.getInstance().getCurrentUser();
+    @Override
+    protected void onStop() {
+        firebaseAuth.removeAuthStateListener(this);
 
-        if(user != null) {
-
-        } else {
-            showUserLogin();
-        }
+        super.onStop();
     }
 
     private void setupUI() {
@@ -99,36 +102,22 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void setupFirebase() {
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth.addAuthStateListener(this);
+
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
+    }
+
     @Override
     public void onBackPressed() {
         if(drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_SIGN_IN) {
-            IdpResponse response = IdpResponse.fromResultIntent(data);
-
-            if (resultCode == RESULT_OK) {
-                user = FirebaseAuth.getInstance().getCurrentUser();
-            } else {
-                if(response != null) {
-                    Snackbar snackbar = Snackbar.make(drawerLayout, "Unable to Sign In", Snackbar.LENGTH_LONG);
-                    snackbar.setAction("Try Again", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            showUserLogin();
-                        }
-                    });
-                    snackbar.show();
-                }
-            }
         }
     }
 
@@ -142,4 +131,41 @@ public class MainActivity extends AppCompatActivity {
                 .setAvailableProviders(providers)
                 .build(), RC_SIGN_IN);
     }
+
+    @Override
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        this.firebaseAuth = firebaseAuth;
+        user = firebaseAuth.getCurrentUser();
+
+        if (user != null) {
+        } else {
+            showUserLogin();
+        }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Snackbar snackbar = null;
+
+            if (resultCode == RESULT_OK) {
+                snackbar = Snackbar.make(findViewById(android.R.id.content), "Sign In Successful", Snackbar.LENGTH_LONG);
+            } else {
+                snackbar = Snackbar.make(findViewById(android.R.id.content), "Unable to Sign In", Snackbar.LENGTH_LONG);
+                snackbar.setAction("Try Again", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showUserLogin();
+                    }
+                });
+            }
+
+            if(snackbar != null)
+                snackbar.show();
+        }
+    }
 }
+
