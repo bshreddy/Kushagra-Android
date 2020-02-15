@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -37,15 +39,29 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.project.crop_prediction.DetailActivity;
 import com.project.crop_prediction.R;
 import com.project.crop_prediction.model.Coordinate;
+import com.project.crop_prediction.model.CoordinateDeserializer;
+import com.project.crop_prediction.model.CoordinateSerializer;
 import com.project.crop_prediction.model.Prediction;
+import com.project.crop_prediction.model.PredictionDeserializer;
+import com.project.crop_prediction.model.PredictionSerializer;
 import com.project.crop_prediction.model.Recent;
 import com.project.crop_prediction.model.RecentDeserializer;
+import com.project.crop_prediction.model.RecentSerializer;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateListener, View.OnClickListener {
 
@@ -54,6 +70,8 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
     private static final int RC_CAPTURE = 1;
     private static final int RC_DETAIL = 2;
     private static final int RC_PERMISSIONS = 100;
+    private static final File sdcard = Environment.getExternalStorageDirectory();
+    private static final File picsFolder = new File(sdcard, "/Pictures/CropPrediction/");
 
     private RecyclerView recyclerView;
     private RecentsAdapter mAdapter;
@@ -137,6 +155,8 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
         if(requestCode == RC_CAPTURE && resultCode == getActivity().RESULT_OK) {
             getPrediction((Bitmap) data.getExtras().get("data"));
+        } else if(requestCode == RC_DETAIL && resultCode == getActivity().RESULT_OK) {
+            saveRecent((Recent) data.getExtras().getParcelable(DetailActivity.RECENT_PARAM));
         }
     }
 
@@ -191,7 +211,9 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()) {
                             recents.clear();
-                            Gson gson = new GsonBuilder().registerTypeAdapter(Recent.class, new RecentDeserializer()).create();
+                            Gson gson = new GsonBuilder()
+                                    .registerTypeAdapter(Recent.class, new RecentDeserializer())
+                                    .create();
 
                             for(DocumentSnapshot doc: task.getResult().getDocuments()) {
                                 recents.add(gson.fromJson(gson.toJsonTree(doc.getData()), Recent.class));
@@ -206,7 +228,57 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
                 });
     }
 
+    private void saveRecent(final Recent recent) {
+        try {
+            if (user == null && recentsRef == null)
+                return;
 
+            DocumentReference doc = recentsRef.document();
+            if(doc == null)
+                return;
+
+            File dir = new File(picsFolder, recent.prediction.getPredictedClass());
+            if (!dir.exists())
+                dir.mkdirs();
+
+            String id = doc.getId();// new SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.getDefault()).format(new Date());
+            String imageName = user.getUid() + "-" + id + ".png";
+
+
+            File imageFile = new File(dir, imageName);
+            imageFile.createNewFile();
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+            recent.prediction.image.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+
+            outputStream.flush();
+            outputStream.close();
+
+            // TODO: Save to Firebase Storage
+
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(Recent.class, new RecentSerializer())
+                    .registerTypeAdapter(Prediction.class, new PredictionSerializer())
+                    .registerTypeAdapter(Coordinate.class, new CoordinateSerializer())
+                    .create();
+            gson.toJsonTree(recent);
+            Map<String, Object> jsonMap = new Gson().fromJson(gson.toJson(recent), new TypeToken<HashMap<String, Object>>() {}.getType());
+            Log.d(TAG, "saveRecent: " + jsonMap);
+
+            doc.set(jsonMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()) {
+                        Log.d(TAG, "onComplete: Saved > " + recent);
+                        loadData();
+                    } else {
+                        Log.d(TAG, "onComplete: Error > " + task.getException().getLocalizedMessage());
+                    }
+                }
+            });
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     private void getPrediction(Bitmap img) {
         Prediction.predict(getContext(), kind, img, new Prediction.PredictionListener() {

@@ -2,6 +2,8 @@ package com.project.crop_prediction.model;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
@@ -24,11 +26,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Prediction {
+public class Prediction implements Parcelable {
 
     private static String cropUrl = "http://192.168.1.10:8000/crop";
     private static String diseaseUrl = "http://192.168.1.10:8000/disease";
@@ -43,6 +46,16 @@ public class Prediction {
             "Tomato - Early blight", "Tomato - Late blight", "Tomato - Leaf Mold", "Tomato - Septoria leaf spot",
             "Tomato - Spider mites, Two-spotted spider mite", "Tomato - Target Spot", "Tomato - Tomato Yellow Leaf Curl Virus",
             "Tomato - Tomato mosaic virus", "Tomato - Healthy"};
+
+    static enum CodingKeys {
+        predicted_idx("pred"), confidences("cnf"), kind("kind");
+
+        public String rawValue;
+
+        CodingKeys(String rawValue) {
+            this.rawValue = rawValue;
+        }
+    }
 
     public interface PredictionListener {
         void onCropPrediction(Prediction prediction);
@@ -62,12 +75,47 @@ public class Prediction {
         }
     }
 
+    public Bitmap image;
     public double confidences[];
     public int predicted_idx;
     public Kind kind;
     public String classes[];
 
-    public static void predict(Context context, Kind kind, Bitmap bitmap, final PredictionListener callback) {
+    protected Prediction(Parcel in) {
+        image = in.readParcelable(Bitmap.class.getClassLoader());
+        confidences = in.createDoubleArray();
+        predicted_idx = in.readInt();
+        classes = in.createStringArray();
+        kind = (Kind) in.readSerializable();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(image, flags);
+        dest.writeDoubleArray(confidences);
+        dest.writeInt(predicted_idx);
+        dest.writeStringArray(classes);
+        dest.writeSerializable(kind);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Prediction> CREATOR = new Creator<Prediction>() {
+        @Override
+        public Prediction createFromParcel(Parcel in) {
+            return new Prediction(in);
+        }
+
+        @Override
+        public Prediction[] newArray(int size) {
+            return new Prediction[size];
+        }
+    };
+
+    public static void predict(Context context, Kind kind, final Bitmap bitmap, final PredictionListener callback) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
         final byte[] imageBytes = outputStream.toByteArray();
@@ -91,7 +139,9 @@ public class Prediction {
                                 .registerTypeAdapter(Prediction.class, new PredictionDeserializer())
                                 .create();
 
-                        callback.onCropPrediction(gson.fromJson(new String(response.data), Prediction.class));
+                        Prediction prediction = gson.fromJson(new String(response.data), Prediction.class);
+                        prediction.image = bitmap;
+                        callback.onCropPrediction(prediction);
                     }
                 },
                 new Response.ErrorListener() {

@@ -15,24 +15,15 @@ public class PredictionDeserializer implements JsonDeserializer<Prediction> {
     public Prediction deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
 
-        JsonArray jsonConf = jsonObject.get(CodingKeys.confidences.rawValue).getAsJsonArray();
+        JsonArray jsonConf = jsonObject.get(Prediction.CodingKeys.confidences.rawValue).getAsJsonArray();
         double conf[] = new double[jsonConf.size()];
 
         for(int i = 0; i < jsonConf.size(); i++)
             conf[i] = jsonConf.get(i).getAsDouble();
 
-        return new Prediction(jsonObject.get(CodingKeys.predicted_idx.rawValue).getAsInt(),
+        return new Prediction(jsonObject.get(Prediction.CodingKeys.predicted_idx.rawValue).getAsInt(),
                 conf,
-                jsonObject.get(CodingKeys.kind.rawValue).getAsString().equalsIgnoreCase("crop") ? Prediction.Kind.crop : Prediction.Kind.disease);
+                jsonObject.get(Prediction.CodingKeys.kind.rawValue).getAsString().equalsIgnoreCase("crop") ? Prediction.Kind.crop : Prediction.Kind.disease);
     }
 
-    private enum CodingKeys {
-        predicted_idx("pred"), confidences("cnf"), kind("kind");
-
-        private String rawValue;
-
-        CodingKeys(String rawValue) {
-            this.rawValue = rawValue;
-        }
-    }
 }

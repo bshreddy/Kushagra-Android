@@ -7,6 +7,16 @@ import java.util.Date;
 
 public class Recent implements Parcelable {
 
+    enum CodingKeys {
+        prediction("pred"), createdAt("crtdAt"), bookmarked("bkmrkd"), location("loc");
+
+        public String rawValue;
+
+        CodingKeys(String rawValue) {
+            this.rawValue = rawValue;
+        }
+    }
+
     public String id;
     public Prediction prediction;
     public Boolean bookmarked;
@@ -27,14 +37,20 @@ public class Recent implements Parcelable {
 
     protected Recent(Parcel in) {
         id = in.readString();
+        prediction = in.readParcelable(Prediction.class.getClassLoader());
         byte tmpBookmarked = in.readByte();
         bookmarked = tmpBookmarked == 0 ? null : tmpBookmarked == 1;
+        createdAt = new Date(in.readLong());
+        coordinate = in.readParcelable(Coordinate.class.getClassLoader());
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(id);
+        dest.writeParcelable(prediction, flags);
         dest.writeByte((byte) (bookmarked == null ? 0 : bookmarked ? 1 : 2));
+        dest.writeLong(createdAt.getTime());
+        dest.writeParcelable(coordinate, flags);
     }
 
     @Override

@@ -13,27 +13,17 @@ import java.util.Date;
 
 public class RecentDeserializer implements JsonDeserializer<Recent> {
 
-    private enum CodingKeys {
-        prediction("pred"), createdAt("crtdAt"), bookmarked("bkmrkd"), location("loc");
-
-        private String rawValue;
-
-        CodingKeys(String rawValue) {
-            this.rawValue = rawValue;
-        }
-    }
-
     @Override
     public Recent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Prediction.class, new PredictionDeserializer())
-                .registerTypeAdapter(Coordinate.class, new LocationDeserializer())
+                .registerTypeAdapter(Coordinate.class, new CoordinateDeserializer())
                 .create();
 
-        return new Recent(gson.fromJson(jsonObject.get(CodingKeys.prediction.rawValue).getAsJsonObject(), Prediction.class),
-                jsonObject.get(CodingKeys.bookmarked.rawValue).getAsBoolean(),
-                new Date(jsonObject.get(CodingKeys.createdAt.rawValue).getAsLong()),
-                gson.fromJson(jsonObject.get(CodingKeys.location.rawValue).getAsJsonObject(), Coordinate.class));
+        return new Recent(gson.fromJson(jsonObject.get(Recent.CodingKeys.prediction.rawValue).getAsJsonObject(), Prediction.class),
+                jsonObject.get(Recent.CodingKeys.bookmarked.rawValue).getAsBoolean(),
+                new Date(jsonObject.get(Recent.CodingKeys.createdAt.rawValue).getAsLong()),
+                gson.fromJson(jsonObject.get(Recent.CodingKeys.location.rawValue).getAsJsonObject(), Coordinate.class));
     }
 }

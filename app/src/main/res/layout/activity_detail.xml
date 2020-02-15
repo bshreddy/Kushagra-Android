@@ -20,7 +20,8 @@
             android:layout_height="wrap_content"
             app:navigationIcon="@drawable/ic_arrow_back_24dp"
             app:title="@string/app_name"
-            app:titleTextColor="@color/colorOnPrimary" />
+            app:titleTextColor="@color/colorOnPrimary"
+            app:menu="@menu/menu_detail"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
