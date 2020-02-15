@@ -32,12 +32,10 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener {
 
     private static final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 1008;
-    private static final int RC_CAPTURE = 1;
-    private static final int RC_PERMISSIONS = 100;
 
     private MaterialToolbar toolbar;
     private DrawerLayout drawerLayout;
@@ -76,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         toggle.syncState();
 
         fab = findViewById(R.id.fab);
-        fab.setOnClickListener(this);
 
         bottomNav = findViewById(R.id.bottom_navigation);
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
@@ -169,47 +166,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             if(snackbar != null)
                 snackbar.show();
         }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-    {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == RC_PERMISSIONS)
-        {
-            boolean granted = true;
-            for(int res: grantResults)
-                granted = granted && (res == PackageManager.PERMISSION_GRANTED);
-
-            if (granted)
-                startActivityForResult(new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), RC_CAPTURE);
-            else
-                Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    @Override
-    public void onClick(View view) {
-        int destId = navController.getCurrentDestination().getId();
-        switch (destId) {
-            case R.id.navigation_crop:
-            case R.id.navigation_disease:
-
-                if (arePermissionsGranted())
-                    startActivityForResult(new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), RC_CAPTURE);
-                else
-                    requestPermissions(new String[]{ android.Manifest.permission.CAMERA,
-                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.READ_EXTERNAL_STORAGE }, RC_PERMISSIONS);
-            default:
-                break;
-        }
-    }
-
-    private boolean arePermissionsGranted() {
-        return (checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
-                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
     }
 }
 

@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorOnPrimary">@color/colorOnPrimary</item>
@@ -10,9 +10,10 @@
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
 
+    <style name="AppTheme.DrawerLayout" parent="AppTheme">
         <item name="android:statusBarColor">@android:color/transparent</item>
-
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
     </style>
 

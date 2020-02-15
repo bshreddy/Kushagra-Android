@@ -10,6 +10,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -29,8 +30,8 @@ import java.util.Map;
 
 public class Prediction {
 
-    private static String cropUrl = "http://localhost:8000/crop";
-    private static String diseaseUrl = "http://localhost:8000/disease";
+    private static String cropUrl = "http://192.168.1.10:8000/crop";
+    private static String diseaseUrl = "http://192.168.1.10:8000/disease";
     private static String cropClasses[] = {"coffee","cotton","jute","maize","millet","rice","sugarcane","tea","tomato","wheat"};
     private static String diseaseClasses[] = {"Apple - Apple scab", "Apple - Black rot", "Apple - Cedar apple rust", "Apple - Healthy",
             "Blueberry - Healthy", "Cherry (including sour) - Powdery mildew", "Cherry (including sour) - healthy",
@@ -55,6 +56,10 @@ public class Prediction {
         Kind(String rawValue) {
             this.rawValue = rawValue;
         }
+
+        public String capitalized() {
+            return rawValue.substring(0, 1).toUpperCase() + rawValue.substring(1);
+        }
     }
 
     public double confidences[];
@@ -62,7 +67,7 @@ public class Prediction {
     public Kind kind;
     public String classes[];
 
-    public static void predict(Context context, Kind kind, Bitmap bitmap, final PredictionListener callback) throws JSONException {
+    public static void predict(Context context, Kind kind, Bitmap bitmap, final PredictionListener callback) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
         final byte[] imageBytes = outputStream.toByteArray();
@@ -73,21 +78,20 @@ public class Prediction {
                 new Response.Listener<NetworkResponse>() {
                     @Override
                     public void onResponse(NetworkResponse response) {
-                        try {
-                            JSONObject obj = new JSONObject(new String(response.data));
-                            int pred = obj.getInt("pred");
-                            Kind kind = (obj.getString("kind").equalsIgnoreCase("crop")) ? Kind.crop : Kind.disease;
+//                            JSONObject obj = new JSONObject(new String(response.data));
+//                            int pred = obj.getInt("pred");
+//                            Kind kind = (obj.getString("kind").equalsIgnoreCase("crop")) ? Kind.crop : Kind.disease;
+//
+//                            JSONArray cnf = obj.getJSONArray("cnf");
+//                            double confidences[] = new double[10];
+//
+//                            for(int i = 0; i < 10; i++)
+//                                confidences[i] = cnf.getInt(i);
+                        Gson gson = new GsonBuilder()
+                                .registerTypeAdapter(Prediction.class, new PredictionDeserializer())
+                                .create();
 
-                            JSONArray cnf = obj.getJSONArray("cnf");
-                            double confidences[] = new double[10];
-
-                            for(int i = 0; i < 10; i++)
-                                confidences[i] = cnf.getInt(i);
-
-                            callback.onCropPrediction(new Prediction(pred, confidences, kind));
-                        } catch (JSONException e) {
-                            callback.onCropPrediction(null);
-                        }
+                        callback.onCropPrediction(gson.fromJson(new String(response.data), Prediction.class));
                     }
                 },
                 new Response.ErrorListener() {

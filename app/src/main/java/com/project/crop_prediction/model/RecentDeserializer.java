@@ -28,12 +28,12 @@ public class RecentDeserializer implements JsonDeserializer<Recent> {
         JsonObject jsonObject = json.getAsJsonObject();
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Prediction.class, new PredictionDeserializer())
-                .registerTypeAdapter(Location.class, new LocationDeserializer())
+                .registerTypeAdapter(Coordinate.class, new LocationDeserializer())
                 .create();
 
         return new Recent(gson.fromJson(jsonObject.get(CodingKeys.prediction.rawValue).getAsJsonObject(), Prediction.class),
                 jsonObject.get(CodingKeys.bookmarked.rawValue).getAsBoolean(),
                 new Date(jsonObject.get(CodingKeys.createdAt.rawValue).getAsLong()),
-                gson.fromJson(jsonObject.get(CodingKeys.location.rawValue).getAsJsonObject(), Location.class));
+                gson.fromJson(jsonObject.get(CodingKeys.location.rawValue).getAsJsonObject(), Coordinate.class));
     }
 }

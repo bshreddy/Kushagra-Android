@@ -1,5 +1,12 @@
 package com.project.crop_prediction.ui.recents;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,11 +19,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -27,28 +37,33 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.project.crop_prediction.DetailActivity;
 import com.project.crop_prediction.R;
-import com.project.crop_prediction.model.Location;
+import com.project.crop_prediction.model.Coordinate;
 import com.project.crop_prediction.model.Prediction;
 import com.project.crop_prediction.model.Recent;
 import com.project.crop_prediction.model.RecentDeserializer;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateListener {
+public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateListener, View.OnClickListener {
 
     private static final String TAG = "RecentsFragment";
     private static final String KIND_PARAM = "kind";
+    private static final int RC_CAPTURE = 1;
+    private static final int RC_DETAIL = 2;
+    private static final int RC_PERMISSIONS = 100;
 
     private RecyclerView recyclerView;
     private RecentsAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
+    private FloatingActionButton fab;
 
-    FirebaseAuth firebaseAuth;
-    FirebaseUser user;
-    CollectionReference recentsRef;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser user;
+    private CollectionReference recentsRef;
+    private FusedLocationProviderClient fusedLocationClient;
 
     private ArrayList<Recent> recents;
     private Prediction.Kind kind;
@@ -71,6 +86,8 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuth.addAuthStateListener(this);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
     }
 
     @Override
@@ -86,6 +103,9 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
         recyclerView.setLayoutManager(layoutManager);
         mAdapter = new RecentsAdapter(recents);
         recyclerView.setAdapter(mAdapter);
+
+        fab = getActivity().findViewById(R.id.fab);
+        fab.setOnClickListener(this);
 
         return root;
     }
@@ -109,6 +129,51 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
         }
 
         loadData();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == RC_CAPTURE && resultCode == getActivity().RESULT_OK) {
+            getPrediction((Bitmap) data.getExtras().get("data"));
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == RC_PERMISSIONS) {
+            boolean granted = true;
+            for(int res: grantResults)
+                granted = granted && (res == PackageManager.PERMISSION_GRANTED);
+
+            if (granted)
+                startActivityForResult(new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), RC_CAPTURE);
+            else
+                Toast.makeText(getContext(), "camera permission denied", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean arePermissionsGranted() {
+        return (getActivity().checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+                getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                getActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED);
+    }
+
+
+    @Override
+    public void onClick(View view) {
+        if (arePermissionsGranted()) {
+            startActivityForResult(new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), RC_CAPTURE);
+        }
+        else
+            requestPermissions(new String[]{ android.Manifest.permission.CAMERA,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION}, RC_PERMISSIONS);
     }
 
     private void loadData() {
@@ -140,4 +205,39 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
                     }
                 });
     }
+
+
+
+    private void getPrediction(Bitmap img) {
+        Prediction.predict(getContext(), kind, img, new Prediction.PredictionListener() {
+
+            @Override
+            public void onCropPrediction(final Prediction prediction) {
+                if(prediction == null) {
+                    Log.d(TAG, "onComplete: Error");
+                    return;
+                }
+
+                fusedLocationClient.getLastLocation()
+                        .addOnCompleteListener(new OnCompleteListener<Location>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Location> task) {
+                                Coordinate coordinate = null;
+
+                                if(task.isSuccessful())
+                                    coordinate = new Coordinate(task.getResult());
+
+                                Recent recent = new Recent(prediction, false, new Date(), coordinate);
+
+                                Intent intent = new Intent(getContext(), DetailActivity.class);
+                                intent.putExtra(DetailActivity.KIND_PARAM, kind);
+                                intent.putExtra(DetailActivity.RECENT_PARAM, recent);
+                                startActivityForResult(intent, RC_DETAIL);
+                                Log.d(TAG, "onComplete: " + recent);
+                            }
+                        });
+            }
+        });
+    }
+
 }

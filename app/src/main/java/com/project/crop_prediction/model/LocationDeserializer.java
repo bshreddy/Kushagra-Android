@@ -8,7 +8,7 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 
-public class LocationDeserializer implements JsonDeserializer<Location> {
+public class LocationDeserializer implements JsonDeserializer<Coordinate> {
 
     private enum CodingKeys {
         lat("lat"), lon("long"), alt("altitude");
@@ -21,10 +21,10 @@ public class LocationDeserializer implements JsonDeserializer<Location> {
     }
 
     @Override
-    public Location deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public Coordinate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
 
-        return new Location(jsonObject.get(CodingKeys.lat.rawValue).getAsDouble(),
+        return new Coordinate(jsonObject.get(CodingKeys.lat.rawValue).getAsDouble(),
                 jsonObject.get(CodingKeys.lon.rawValue).getAsDouble(),
                 jsonObject.get(CodingKeys.alt.rawValue).getAsDouble());
     }
