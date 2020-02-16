@@ -19,21 +19,19 @@ public class RecentsAdapter extends RecyclerView.Adapter<RecentsAdapter.RecentsV
 
     private Context context;
     private ArrayList<Recent> recents;
+    private OnClickListener clickListener;
 
-    public RecentsAdapter(Context context, ArrayList<Recent> recents) {
+    public RecentsAdapter(Context context, ArrayList<Recent> recents, OnClickListener clickListener) {
         this.context = context;
         this.recents = recents;
-    }
-
-    public RecentsAdapter(Context context) {
-        this(context, new ArrayList<Recent>());
+        this.clickListener = clickListener;
     }
 
     @NonNull
     @Override
     public RecentsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new RecentsViewHolder(LayoutInflater.from(parent.getContext()).
-                inflate(R.layout.layout_recent_card, parent, false));
+                inflate(R.layout.layout_recent_card, parent, false), clickListener);
     }
 
     @Override
@@ -56,17 +54,30 @@ public class RecentsAdapter extends RecyclerView.Adapter<RecentsAdapter.RecentsV
         this.notifyDataSetChanged();
     }
 
+    public interface OnClickListener{
+        void onClick(int position);
+    }
+
     public static class RecentsViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView imageView;
         public TextView title, subtitle;
 
-        public RecentsViewHolder(View view) {
+        public RecentsViewHolder(View view, final OnClickListener clickListener) {
             super(view);
 
             imageView = view.findViewById(R.id.recent_image);
             title = view.findViewById(R.id.recent_title);
             subtitle = view.findViewById(R.id.recent_subtitle);
+
+            if(clickListener != null) {
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        clickListener.onClick(getAdapterPosition());
+                    }
+                });
+            }
         }
     }
 

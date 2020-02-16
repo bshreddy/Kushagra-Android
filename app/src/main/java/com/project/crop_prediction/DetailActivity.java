@@ -4,14 +4,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -20,7 +21,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.project.crop_prediction.model.Coordinate;
 import com.project.crop_prediction.model.Prediction;
 import com.project.crop_prediction.model.Recent;
-import com.project.crop_prediction.ui.recents.RecentsFragment;
+import com.project.crop_prediction.ui.recents.RecentsAdapter;
 
 import java.util.Date;
 
@@ -31,6 +32,10 @@ public class DetailActivity extends AppCompatActivity {
     public static final String PREDICTION_PARAM = "prediction";
     public static final String ISNEW_PARAM = "recent";
     private static final String TAG = "DetailActivity";
+
+    private RecyclerView recyclerView;
+    private DetailAdapter mAdapter;
+    private RecyclerView.LayoutManager layoutManager;
     private MaterialToolbar toolbar;
 
     private FusedLocationProviderClient fusedLocationClient;
@@ -48,50 +53,12 @@ public class DetailActivity extends AppCompatActivity {
         setupUI();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_detail, menu);
-
-        if(!isNew)
-            menu.removeItem(R.id.menu_save_prediction);
-
-        return true;
-    }
-    
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if(isNew) {
-                    confirmCancel();
-                    return true;
-                }
-                break;
-
-            case R.id.menu_save_prediction:
-
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if(isNew) {
-            confirmCancel();
-            return;
-        }
-
-        super.onBackPressed();
-    }
-
     private void initVariables() {
         Intent intent = getIntent();
         kind = (Prediction.Kind) intent.getSerializableExtra(KIND_PARAM);
         isNew = intent.getBooleanExtra(ISNEW_PARAM, false);
 
-        if(isNew) {
+        if (isNew) {
             Prediction prediction = intent.getParcelableExtra(PREDICTION_PARAM);
             recent = new Recent(prediction, new Date());
 
@@ -115,11 +82,57 @@ public class DetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        if(isNew) {
+        if (isNew) {
             getSupportActionBar().setTitle("New " + kind.capitalized() + " Detection");
             toolbar.setNavigationIcon(R.drawable.ic_close_24dp);
         } else
             getSupportActionBar().setTitle(kind.capitalized() + " Details");
+
+        recyclerView = findViewById(R.id.detail_recycler);
+        recyclerView.setHasFixedSize(true);
+
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        mAdapter = new DetailAdapter(this, recent);
+        recyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_detail, menu);
+
+        if (!isNew)
+            menu.removeItem(R.id.menu_save_prediction);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (isNew) {
+                    confirmCancel();
+                    return true;
+                }
+                break;
+
+            case R.id.menu_save_prediction:
+
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isNew) {
+            confirmCancel();
+            return;
+        }
+
+        super.onBackPressed();
     }
 
     private void confirmCancel() {

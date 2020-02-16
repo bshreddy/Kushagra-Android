@@ -1,6 +1,7 @@
 package com.project.crop_prediction.ui.recents;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -52,7 +53,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, RecentsAdapter.OnClickListener {
 
     private static final String TAG = "RecentsFragment";
     private static final String KIND_PARAM = "kind";
@@ -86,13 +87,14 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: " + savedInstanceState);
+
         if (getArguments() != null) {
             kind = getArguments().getString(KIND_PARAM).equalsIgnoreCase(Prediction.Kind.crop.rawValue) ? Prediction.Kind.crop : Prediction.Kind.disease;
-            Log.d(TAG, "onCreate: " + kind);
-        }
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseAuth.addAuthStateListener(this);
+            firebaseAuth = FirebaseAuth.getInstance();
+            firebaseAuth.addAuthStateListener(this);
+        }
     }
 
     @Override
@@ -109,7 +111,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        mAdapter = new RecentsAdapter(getContext(), recents);
+        mAdapter = new RecentsAdapter(getContext(), recents, this);
         recyclerView.setAdapter(mAdapter);
 
         fab = getActivity().findViewById(R.id.fab);
@@ -121,7 +123,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
     @Override
     public void onDestroy() {
         firebaseAuth.removeAuthStateListener(this);
-
+        Log.d(TAG, "onDestroy: ");
         super.onDestroy();
     }
 
@@ -180,6 +182,16 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     android.Manifest.permission.READ_EXTERNAL_STORAGE,
                     android.Manifest.permission.ACCESS_FINE_LOCATION}, RC_PERMISSIONS);
+    }
+
+    @Override
+    public void onClick(int position) {
+        Recent recent = recents.get(position);
+
+        Intent intent = new Intent(getContext(), DetailActivity.class);
+        intent.putExtra(DetailActivity.KIND_PARAM, kind);
+        intent.putExtra(DetailActivity.RECENT_PARAM, recent);
+        startActivity(intent);
     }
 
     private boolean arePermissionsGranted() {
