@@ -1,20 +1,10 @@
 package com.project.crop_prediction.ui.recents;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,8 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -43,10 +38,8 @@ import com.google.gson.reflect.TypeToken;
 import com.project.crop_prediction.DetailActivity;
 import com.project.crop_prediction.R;
 import com.project.crop_prediction.model.Coordinate;
-import com.project.crop_prediction.model.CoordinateDeserializer;
 import com.project.crop_prediction.model.CoordinateSerializer;
 import com.project.crop_prediction.model.Prediction;
-import com.project.crop_prediction.model.PredictionDeserializer;
 import com.project.crop_prediction.model.PredictionSerializer;
 import com.project.crop_prediction.model.Recent;
 import com.project.crop_prediction.model.RecentDeserializer;
@@ -55,15 +48,11 @@ import com.project.crop_prediction.model.RecentSerializer;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
-public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateListener, View.OnClickListener {
+public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "RecentsFragment";
     private static final String KIND_PARAM = "kind";
@@ -73,6 +62,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
     private static final File sdcard = Environment.getExternalStorageDirectory();
     private static final File picsFolder = new File(sdcard, "/Pictures/CropPrediction/");
 
+    private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
     private RecentsAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -81,7 +71,6 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
     private CollectionReference recentsRef;
-    private FusedLocationProviderClient fusedLocationClient;
 
     private ArrayList<Recent> recents;
     private Prediction.Kind kind;
@@ -104,8 +93,6 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuth.addAuthStateListener(this);
-
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
     }
 
     @Override
@@ -114,12 +101,15 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
         recents = new ArrayList<>();
 
+        swipeRefreshLayout = root.findViewById(R.id.recents_refresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
+
         recyclerView = root.findViewById(R.id.recents_recycler);
         recyclerView.setHasFixedSize(true);
 
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        mAdapter = new RecentsAdapter(recents);
+        mAdapter = new RecentsAdapter(getContext(), recents);
         recyclerView.setAdapter(mAdapter);
 
         fab = getActivity().findViewById(R.id.fab);
@@ -140,7 +130,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
         this.firebaseAuth = firebaseAuth;
         user = firebaseAuth.getCurrentUser();
 
-        if(user != null) {
+        if (user != null) {
             recentsRef = FirebaseFirestore.getInstance().collection("users").document(user.getUid()).collection("recents");
         } else {
             recentsRef = null;
@@ -153,9 +143,9 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == RC_CAPTURE && resultCode == getActivity().RESULT_OK) {
+        if (requestCode == RC_CAPTURE && resultCode == getActivity().RESULT_OK) {
             getPrediction((Bitmap) data.getExtras().get("data"));
-        } else if(requestCode == RC_DETAIL && resultCode == getActivity().RESULT_OK) {
+        } else if (requestCode == RC_DETAIL && resultCode == getActivity().RESULT_OK) {
             saveRecent((Recent) data.getExtras().getParcelable(DetailActivity.RECENT_PARAM));
         }
     }
@@ -166,7 +156,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
         if (requestCode == RC_PERMISSIONS) {
             boolean granted = true;
-            for(int res: grantResults)
+            for (int res : grantResults)
                 granted = granted && (res == PackageManager.PERMISSION_GRANTED);
 
             if (granted)
@@ -176,6 +166,22 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
         }
     }
 
+    @Override
+    public void onRefresh() {
+        loadData();
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (arePermissionsGranted()) {
+            startActivityForResult(new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), RC_CAPTURE);
+        } else
+            requestPermissions(new String[]{android.Manifest.permission.CAMERA,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION}, RC_PERMISSIONS);
+    }
+
     private boolean arePermissionsGranted() {
         return (getActivity().checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
                 getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
@@ -183,25 +189,14 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
                 getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED);
     }
 
-
-    @Override
-    public void onClick(View view) {
-        if (arePermissionsGranted()) {
-            startActivityForResult(new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), RC_CAPTURE);
-        }
-        else
-            requestPermissions(new String[]{ android.Manifest.permission.CAMERA,
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION}, RC_PERMISSIONS);
-    }
-
     private void loadData() {
-        if(recentsRef == null) {
+        if (recentsRef == null) {
             recents.clear();
             mAdapter.reloadData();
             return;
         }
+
+        swipeRefreshLayout.setRefreshing(true);
 
         String kindFieldPath[] = {"pred", "kind"};
         recentsRef.whereEqualTo(FieldPath.of(kindFieldPath), kind.rawValue)
@@ -209,17 +204,18 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()) {
+                        if (task.isSuccessful()) {
                             recents.clear();
                             Gson gson = new GsonBuilder()
                                     .registerTypeAdapter(Recent.class, new RecentDeserializer())
                                     .create();
 
-                            for(DocumentSnapshot doc: task.getResult().getDocuments()) {
+                            for (DocumentSnapshot doc : task.getResult().getDocuments()) {
                                 recents.add(gson.fromJson(gson.toJsonTree(doc.getData()), Recent.class));
                             }
 
                             mAdapter.reloadData();
+                            swipeRefreshLayout.setRefreshing(false);
                         } else {
                             Snackbar.make(getActivity().findViewById(android.R.id.content),
                                     "Umm! Unable to read data", Snackbar.LENGTH_LONG).show();
@@ -234,16 +230,15 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
                 return;
 
             DocumentReference doc = recentsRef.document();
-            if(doc == null)
+            if (doc == null)
                 return;
 
             File dir = new File(picsFolder, recent.prediction.getPredictedClass());
             if (!dir.exists())
                 dir.mkdirs();
 
-            String id = doc.getId();// new SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.getDefault()).format(new Date());
+            String id = doc.getId();
             String imageName = user.getUid() + "-" + id + ".png";
-
 
             File imageFile = new File(dir, imageName);
             imageFile.createNewFile();
@@ -261,13 +256,14 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
                     .registerTypeAdapter(Coordinate.class, new CoordinateSerializer())
                     .create();
             gson.toJsonTree(recent);
-            Map<String, Object> jsonMap = new Gson().fromJson(gson.toJson(recent), new TypeToken<HashMap<String, Object>>() {}.getType());
+            Map<String, Object> jsonMap = new Gson().fromJson(gson.toJson(recent), new TypeToken<HashMap<String, Object>>() {
+            }.getType());
             Log.d(TAG, "saveRecent: " + jsonMap);
 
             doc.set(jsonMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()) {
+                    if (task.isSuccessful()) {
                         Log.d(TAG, "onComplete: Saved > " + recent);
                         loadData();
                     } else {
@@ -285,31 +281,17 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
             @Override
             public void onCropPrediction(final Prediction prediction) {
-                if(prediction == null) {
+                if (prediction == null) {
                     Log.d(TAG, "onComplete: Error");
                     return;
                 }
 
-                fusedLocationClient.getLastLocation()
-                        .addOnCompleteListener(new OnCompleteListener<Location>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Location> task) {
-                                Coordinate coordinate = null;
-
-                                if(task.isSuccessful())
-                                    coordinate = new Coordinate(task.getResult());
-
-                                Recent recent = new Recent(prediction, false, new Date(), coordinate);
-
-                                Intent intent = new Intent(getContext(), DetailActivity.class);
-                                intent.putExtra(DetailActivity.KIND_PARAM, kind);
-                                intent.putExtra(DetailActivity.RECENT_PARAM, recent);
-                                startActivityForResult(intent, RC_DETAIL);
-                                Log.d(TAG, "onComplete: " + recent);
-                            }
-                        });
+                Intent intent = new Intent(getContext(), DetailActivity.class);
+                intent.putExtra(DetailActivity.KIND_PARAM, kind);
+                intent.putExtra(DetailActivity.PREDICTION_PARAM, prediction);
+                intent.putExtra(DetailActivity.ISNEW_PARAM, true);
+                startActivityForResult(intent, RC_DETAIL);
             }
         });
     }
-
 }

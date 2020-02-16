@@ -35,6 +35,10 @@ public class Recent implements Parcelable {
         this(null, prediction, bookmarked, createdAt, coordinate);
     }
 
+    public Recent(Prediction prediction, Date createdAt) {
+        this(null, prediction, false, createdAt, null);
+    }
+
     protected Recent(Parcel in) {
         id = in.readString();
         prediction = in.readParcelable(Prediction.class.getClassLoader());

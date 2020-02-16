@@ -1,5 +1,6 @@
 package com.project.crop_prediction.ui.recents;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,44 @@ import java.util.ArrayList;
 
 public class RecentsAdapter extends RecyclerView.Adapter<RecentsAdapter.RecentsViewHolder> {
 
+    private Context context;
     private ArrayList<Recent> recents;
+
+    public RecentsAdapter(Context context, ArrayList<Recent> recents) {
+        this.context = context;
+        this.recents = recents;
+    }
+
+    public RecentsAdapter(Context context) {
+        this(context, new ArrayList<Recent>());
+    }
+
+    @NonNull
+    @Override
+    public RecentsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new RecentsViewHolder(LayoutInflater.from(parent.getContext()).
+                inflate(R.layout.layout_recent_card, parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecentsViewHolder holder, int position) {
+        Recent recent = recents.get(position);
+
+        holder.imageView.setImageResource(context.getResources()
+                .getIdentifier(recent.prediction.getPredictedClass(),
+                        "drawable", context.getPackageName()));
+        holder.title.setText(recent.prediction.getPredictedName());
+        holder.subtitle.setText("Some Details");
+    }
+
+    @Override
+    public int getItemCount() {
+        return recents.size();
+    }
+
+    public void reloadData() {
+        this.notifyDataSetChanged();
+    }
 
     public static class RecentsViewHolder extends RecyclerView.ViewHolder {
 
@@ -30,37 +68,6 @@ public class RecentsAdapter extends RecyclerView.Adapter<RecentsAdapter.RecentsV
             title = view.findViewById(R.id.recent_title);
             subtitle = view.findViewById(R.id.recent_subtitle);
         }
-    }
-
-    public RecentsAdapter(ArrayList<Recent> recents) {
-        this.recents = recents;
-    }
-
-    public RecentsAdapter() {
-        this.recents = new ArrayList<>();
-    }
-
-    @NonNull
-    @Override
-    public RecentsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new RecentsViewHolder(LayoutInflater.from(parent.getContext()).
-                inflate(R.layout.layout_recent_card, parent, false));
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull RecentsViewHolder holder, int position) {
-        Recent recent = recents.get(position);
-        holder.title.setText(recent.prediction.getPredictedName());
-        holder.subtitle.setText("Some Details");
-    }
-
-    @Override
-    public int getItemCount() {
-        return recents.size();
-    }
-
-    public void reloadData() {
-        this.notifyDataSetChanged();
     }
 
 }
