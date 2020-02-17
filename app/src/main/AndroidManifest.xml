@@ -19,14 +19,24 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".detail.DetailActivity" android:parentActivityName=".MainActivity"></activity>
-        <activity android:name=".MainActivity" android:theme="@style/AppTheme.DrawerLayout">
+        <activity
+            android:name=".detail.DetailActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.DrawerLayout">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBj2Ou7yDBEOieH_XQAB5i7z8NBbdX02kc"/>
     </application>
 
 </manifest>

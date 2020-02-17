@@ -20,9 +20,9 @@ public class Coordinate implements Parcelable {
     }
     }
 
-    double lat;
-    double lon;
-    double alt;
+    public double lat;
+    public double lon;
+    public double alt;
 
     public Coordinate(double lat, double lon, double alt) {
         this.lat = lat;
