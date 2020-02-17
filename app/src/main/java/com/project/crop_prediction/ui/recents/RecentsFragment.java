@@ -1,7 +1,6 @@
 package com.project.crop_prediction.ui.recents;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -36,7 +35,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.project.crop_prediction.DetailActivity;
+import com.project.crop_prediction.detail.DetailActivity;
 import com.project.crop_prediction.R;
 import com.project.crop_prediction.model.Coordinate;
 import com.project.crop_prediction.model.CoordinateSerializer;

@@ -3,6 +3,7 @@ package com.project.crop_prediction.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Recent implements Parcelable {
@@ -73,6 +74,24 @@ public class Recent implements Parcelable {
             return new Recent[size];
         }
     };
+
+    public ArrayList<InfoCell> getInfoList() {
+        return Recent.getInfoList(this);
+    }
+
+    public static ArrayList<InfoCell> getInfoList(Recent recent) {
+        ArrayList<InfoCell> infos = new ArrayList<>();
+
+        if(recent == null) {
+            infos.add(new InfoCell("N/A", "Name"));
+            infos.addAll(Coordinate.getInfoList(null));
+        } else {
+            infos.add(new InfoCell(recent.prediction.getPredictedName(), "Name"));
+            infos.addAll(recent.coordinate.getInfoList());
+        }
+
+        return infos;
+    }
 
     public String toString() {
         return "Recent(id: " + id + ", prediction: " + prediction + ", bookmarked: " + bookmarked +

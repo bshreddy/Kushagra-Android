@@ -43,6 +43,12 @@ public class RecentsAdapter extends RecyclerView.Adapter<RecentsAdapter.RecentsV
                         "drawable", context.getPackageName()));
         holder.title.setText(recent.prediction.getPredictedName());
         holder.subtitle.setText("Some Details");
+
+        if(recent.prediction.image != null) {
+            holder.imageView.setImageBitmap(recent.prediction.image);
+        } else {
+            //TODO: Read image from Local File System ot fetch from Firebase Storage
+        }
     }
 
     @Override

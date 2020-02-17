@@ -1,4 +1,4 @@
-package com.project.crop_prediction;
+package com.project.crop_prediction.detail;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,16 +12,15 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.project.crop_prediction.R;
 import com.project.crop_prediction.model.Coordinate;
 import com.project.crop_prediction.model.Prediction;
 import com.project.crop_prediction.model.Recent;
-import com.project.crop_prediction.ui.recents.RecentsAdapter;
 
 import java.util.Date;
 

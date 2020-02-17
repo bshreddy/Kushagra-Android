@@ -6,6 +6,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+
 public class Coordinate implements Parcelable {
 
     enum CodingKeys {
@@ -61,6 +63,26 @@ public class Coordinate implements Parcelable {
             return new Coordinate[size];
         }
     };
+
+    public ArrayList<InfoCell> getInfoList() {
+        return Coordinate.getInfoList(this);
+    }
+
+    public static ArrayList<InfoCell> getInfoList(Coordinate coordinate) {
+        ArrayList<InfoCell> infos = new ArrayList<>();
+
+        if(coordinate == null) {
+            infos.add(new InfoCell("N/A", "Latitude"));
+            infos.add(new InfoCell("N/A", "Longitude"));
+            infos.add(new InfoCell("N/A", "Altitude"));
+        } else {
+            infos.add(new InfoCell(coordinate.lat + "\u00B0 N", "Latitude"));
+            infos.add(new InfoCell(coordinate.lon + "\u00B0 E", "Longitude"));
+            infos.add(new InfoCell(coordinate.alt + " m above MSE", "Altitude"));
+        }
+
+        return infos;
+    }
 
     @NonNull
     @Override
