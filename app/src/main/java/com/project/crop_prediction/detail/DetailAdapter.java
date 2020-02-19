@@ -17,17 +17,25 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.project.crop_prediction.R;
 import com.project.crop_prediction.model.Coordinate;
+import com.project.crop_prediction.model.CropDetails;
+import com.project.crop_prediction.model.CropDetailsDeserializer;
 import com.project.crop_prediction.model.InfoCell;
 import com.project.crop_prediction.model.Recent;
 
 import java.util.ArrayList;
 
 public class DetailAdapter extends RecyclerView.Adapter {
+
+    private static final String TAG = "DetailAdapter";
 
     private final int TYPE_IMAGE = 1;
     private final int TYPE_INFO_LIST = 2;
@@ -37,10 +45,12 @@ public class DetailAdapter extends RecyclerView.Adapter {
 
     private Context context;
     private Recent recent;
+    private CropDetails cropDetails;
 
     public DetailAdapter(Context context, Recent recent) {
         this.context = context;
         this.recent = recent;
+        cropDetails = null;
     }
 
     @Override
@@ -61,7 +71,21 @@ public class DetailAdapter extends RecyclerView.Adapter {
 
             case TYPE_INFO_LIST:
                 viewHolder = new InfoListViewHolder(context, LayoutInflater.from(parent.getContext()).
-                        inflate(R.layout.layout_info_list_card, parent, false), recent.getInfoList());
+                        inflate(R.layout.layout_info_list_card, parent, false), getInfoList());
+                final RecyclerView.ViewHolder finalViewHolder = viewHolder;
+                FirebaseFirestore.getInstance().collection("details")
+                        .document(recent.prediction.getPredictedClass()).get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                Gson gson = new GsonBuilder()
+                                        .registerTypeAdapter(CropDetails.class, new CropDetailsDeserializer())
+                                        .create();
+
+                                cropDetails = gson.fromJson(gson.toJsonTree(documentSnapshot.getData()), CropDetails.class);
+                                ((InfoListViewHolder) finalViewHolder).setInfos(getInfoList());
+                            }
+                        });
                 break;
 
             case TYPE_MAP:
@@ -93,7 +117,7 @@ public class DetailAdapter extends RecyclerView.Adapter {
                 break;
 
             case TYPE_INFO_LIST:
-                InfoListViewHolder listViewHolder = (InfoListViewHolder) holder;
+                final InfoListViewHolder listViewHolder = (InfoListViewHolder) holder;
                 break;
 
             case TYPE_MAP:
@@ -119,13 +143,21 @@ public class DetailAdapter extends RecyclerView.Adapter {
 
     }
 
-    private static class InfoListViewHolder extends RecyclerView.ViewHolder {
+    private ArrayList<InfoCell> getInfoList() {
+        ArrayList<InfoCell> infos = new ArrayList<>();
+        infos.addAll(recent.getInfoList());
 
-        ArrayList<InfoCell> infos;
+        if(cropDetails != null)
+            infos.addAll(cropDetails.getInfoList());
+        return infos;
+    }
+
+    private static class InfoListViewHolder extends RecyclerView.ViewHolder {
 
         public RecyclerView recyclerView;
         private InfoListAdapter mAdapter;
         private LinearLayoutManager layoutManager;
+        ArrayList<InfoCell> infos;
 
         public InfoListViewHolder(Context context, View view, ArrayList<InfoCell> infos) {
             super(view);
@@ -141,6 +173,13 @@ public class DetailAdapter extends RecyclerView.Adapter {
                     layoutManager.getOrientation());
 
             recyclerView.addItemDecoration(dividerItemDecoration);
+        }
+
+        public void setInfos(ArrayList<InfoCell> infos) {
+            this.infos.clear();
+            this.infos.addAll(infos);
+            mAdapter.notifyDataSetChanged();
+            Log.d(TAG, "setInfos: " + infos.size());
         }
 
     }

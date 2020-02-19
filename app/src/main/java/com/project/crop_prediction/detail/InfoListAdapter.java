@@ -30,6 +30,9 @@ public class InfoListAdapter extends RecyclerView.Adapter<InfoListAdapter.InfoVi
 
     @Override
     public void onBindViewHolder(@NonNull InfoViewHolder holder, int position) {
+        if(position >= infos.size())
+            return;
+
         InfoCell info = infos.get(position);
 
         holder.title.setText(info.title);

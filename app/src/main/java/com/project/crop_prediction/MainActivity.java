@@ -3,8 +3,11 @@ package com.project.crop_prediction;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,16 +22,21 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     private BottomNavigationView bottomNav;
     private FloatingActionButton fab;
     private NavController navController;
+    private ImageView navHeaderDP;
+    private TextView navHeaderUname;
+    private TextView navHeaderEmail;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
@@ -65,6 +76,16 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     private void setupUI() {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setDisplayShowHomeEnabled(false);
+
+        fab = findViewById(R.id.fab);
+        bottomNav = findViewById(R.id.bottom_navigation);
+
+        View navigationHeaderView = ((NavigationView) findViewById(R.id.nav_drawer)).getHeaderView(0);
+        navHeaderDP = navigationHeaderView.findViewById(R.id.nav_header_dp);
+        navHeaderUname = navigationHeaderView.findViewById(R.id.nav_header_uname);
+        navHeaderEmail = navigationHeaderView.findViewById(R.id.nav_header_email);
 
         drawerLayout = findViewById(R.id.drawer_layout);
 
@@ -73,9 +94,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        fab = findViewById(R.id.fab);
-
-        bottomNav = findViewById(R.id.bottom_navigation);
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_crop, R.id.navigation_disease, R.id.navigation_forum, R.id.navigation_prices)
                 .build();
@@ -138,7 +156,14 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         user = firebaseAuth.getCurrentUser();
 
         if (user != null) {
+            navHeaderUname.setText(user.getDisplayName());
+            navHeaderEmail.setText(user.getEmail());
+            Glide.with(this).load(user.getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(navHeaderDP);
         } else {
+            navHeaderUname.setText(R.string.default_uname);
+            navHeaderEmail.setText(R.string.default_email);
+            navHeaderDP.setImageResource(R.drawable.ic_profile_24px);
+
             showUserLogin();
         }
     }

@@ -18,21 +18,20 @@
         android:layout_height="72dp"
         android:contentDescription="Navigation header"
         android:scaleType="centerCrop"
-        app:srcCompat="@drawable/ic_header_account"
-        android:background="@drawable/circular_image"/>
+        app:srcCompat="@drawable/ic_header_account" />
 
     <TextView
         android:id="@+id/nav_header_uname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
-        android:text="Android Studio"
+        android:text="@string/default_uname"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
 
     <TextView
-        android:id="@+id/nav_header_uemail"
+        android:id="@+id/nav_header_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="android.studio@android.com" />
+        android:text="@string/default_email" />
 
 </LinearLayout>

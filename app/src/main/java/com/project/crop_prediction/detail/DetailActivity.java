@@ -2,42 +2,36 @@ package com.project.crop_prediction.detail;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.project.crop_prediction.R;
-import com.project.crop_prediction.model.Coordinate;
+import com.project.crop_prediction.model.CropDetails;
 import com.project.crop_prediction.model.Prediction;
 import com.project.crop_prediction.model.Recent;
-
-import java.util.Date;
 
 public class DetailActivity extends AppCompatActivity {
 
     public static final String KIND_PARAM = "kind";
     public static final String RECENT_PARAM = "recent";
-    public static final String PREDICTION_PARAM = "prediction";
-    public static final String ISNEW_PARAM = "recent";
+    public static final String CROP_DETAILS_PARAM = "crop_details";
+    public static final String ISNEW_PARAM = "isnew";
     private static final String TAG = "DetailActivity";
 
     private RecyclerView recyclerView;
     private DetailAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private MaterialToolbar toolbar;
-
-    private FusedLocationProviderClient fusedLocationClient;
 
     private Prediction.Kind kind;
     private Recent recent;
@@ -56,22 +50,7 @@ public class DetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         kind = (Prediction.Kind) intent.getSerializableExtra(KIND_PARAM);
         isNew = intent.getBooleanExtra(ISNEW_PARAM, false);
-
-        if (isNew) {
-            Prediction prediction = intent.getParcelableExtra(PREDICTION_PARAM);
-            recent = new Recent(prediction, new Date());
-
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-            fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            recent.coordinate = new Coordinate(location);
-                        }
-                    });
-        } else {
-            recent = intent.getParcelableExtra(RECENT_PARAM);
-        }
+        recent = intent.getParcelableExtra(RECENT_PARAM);
     }
 
     private void setupUI() {
@@ -100,7 +79,9 @@ public class DetailActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_detail, menu);
 
-        if (!isNew)
+        if (isNew)
+            menu.removeItem(R.id.menu_delete);
+        else
             menu.removeItem(R.id.menu_save_prediction);
 
         return true;
@@ -117,7 +98,7 @@ public class DetailActivity extends AppCompatActivity {
                 break;
 
             case R.id.menu_save_prediction:
-
+                save();
                 return true;
         }
 
@@ -149,6 +130,7 @@ public class DetailActivity extends AppCompatActivity {
                         DetailActivity.this.close();
                     }
                 })
+                .setNeutralButton("Cancel", null)
                 .create()
                 .show();
     }

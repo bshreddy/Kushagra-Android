@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -19,7 +20,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -37,8 +41,11 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.project.crop_prediction.detail.DetailActivity;
 import com.project.crop_prediction.R;
+import com.project.crop_prediction.detail.DetailAdapter;
 import com.project.crop_prediction.model.Coordinate;
 import com.project.crop_prediction.model.CoordinateSerializer;
+import com.project.crop_prediction.model.CropDetails;
+import com.project.crop_prediction.model.CropDetailsDeserializer;
 import com.project.crop_prediction.model.Prediction;
 import com.project.crop_prediction.model.PredictionSerializer;
 import com.project.crop_prediction.model.Recent;
@@ -48,7 +55,9 @@ import com.project.crop_prediction.model.RecentSerializer;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,6 +83,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
     private ArrayList<Recent> recents;
     private Prediction.Kind kind;
+    private FusedLocationProviderClient fusedLocationClient;
 
     public static RecentsFragment newInstance(String kind) {
         RecentsFragment fragment = new RecentsFragment();
@@ -94,6 +104,8 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
             firebaseAuth = FirebaseAuth.getInstance();
             firebaseAuth.addAuthStateListener(this);
         }
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
     }
 
     @Override
@@ -190,6 +202,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
         Intent intent = new Intent(getContext(), DetailActivity.class);
         intent.putExtra(DetailActivity.KIND_PARAM, kind);
         intent.putExtra(DetailActivity.RECENT_PARAM, recent);
+
         startActivity(intent);
     }
 
@@ -297,12 +310,27 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
                     return;
                 }
 
-                Intent intent = new Intent(getContext(), DetailActivity.class);
-                intent.putExtra(DetailActivity.KIND_PARAM, kind);
-                intent.putExtra(DetailActivity.PREDICTION_PARAM, prediction);
-                intent.putExtra(DetailActivity.ISNEW_PARAM, true);
-                startActivityForResult(intent, RC_DETAIL);
+                fusedLocationClient.getLastLocation()
+                        .addOnCompleteListener(new OnCompleteListener<Location>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Location> task) {
+                                Coordinate coordinate = null;
+
+                                if (task.isSuccessful())
+                                    coordinate = new Coordinate(task.getResult());
+
+                                Recent recent = new Recent(prediction, false, new Date(), coordinate);
+
+                                Intent intent = new Intent(getContext(), DetailActivity.class);
+                                intent.putExtra(DetailActivity.KIND_PARAM, kind);
+                                intent.putExtra(DetailActivity.ISNEW_PARAM, true);
+                                intent.putExtra(DetailActivity.RECENT_PARAM, recent);
+                                startActivityForResult(intent, RC_DETAIL);
+                                Log.d(TAG, "onComplete: " + recent);
+                            }
+                        });
             }
         });
     }
+
 }
