@@ -22,13 +22,13 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        username=findViewById(R.id.profile_uname);
-        profileDP=findViewById(R.id.profile_dp);
+        username = findViewById(R.id.profile_uname);
+        profileDP = findViewById(R.id.profile_dp);
 
-        firebaseAuth=FirebaseAuth.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
 
         if(firebaseAuth.getCurrentUser()!=null){
-            FirebaseUser user=firebaseAuth.getCurrentUser();
+            FirebaseUser user = firebaseAuth.getCurrentUser();
             username.setText(user.getDisplayName());
             Glide.with(this).load(user.getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(profileDP);
 
