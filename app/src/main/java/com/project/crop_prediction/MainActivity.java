@@ -3,8 +3,10 @@ package com.project.crop_prediction;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -64,14 +66,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setNavigationItemListener();
         setupUI();
         setupFirebase();
-    }
-
-    private void setNavigationItemListener() {
-        navigationView = findViewById(R.id.nav_drawer);
-        navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -90,7 +86,10 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         fab = findViewById(R.id.fab);
         bottomNav = findViewById(R.id.bottom_navigation);
 
-        View navigationHeaderView = ((NavigationView) findViewById(R.id.nav_drawer)).getHeaderView(0);
+        NavigationView navigationView = findViewById(R.id.nav_drawer);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        View navigationHeaderView = navigationView.getHeaderView(0);
         navHeaderDP = navigationHeaderView.findViewById(R.id.nav_header_dp);
         navHeaderUname = navigationHeaderView.findViewById(R.id.nav_header_uname);
         navHeaderEmail = navigationHeaderView.findViewById(R.id.nav_header_email);
@@ -126,6 +125,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                 }
             }
         });
+
+
     }
 
     private void setupFirebase() {
@@ -204,20 +205,34 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch(item.getItemId()){
+            case R.id.menu_bookmarks:
+                Toast.makeText(this, "menu_bookmarks", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.menu_server:
+                Toast.makeText(this, "menu_server", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.menu_settings:
+                Toast.makeText(this, "menu_settings", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.menu_help:
+                Toast.makeText(this, "menu_help", Toast.LENGTH_SHORT).show();
+                break;
+
             case R.id.menu_invite:
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "Hey,\n" +
-                        "\n" +
-                        "Crop Prediction App is an AI-powered, intuitive app that I use to identify my crops, crop diseases and get solutions.\n" +
-                        "\n" +
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "Hey,\n\nCrop Prediction App is an AI-powered, "+
+                        "intuitive app that I use to identify my crops, crop diseases and get solutions.\n\n"+
                         "Get it for free at Play Store");
                 sendIntent.setType("text/*");
-
                 Intent shareIntent = Intent.createChooser(sendIntent, "Invite Friends Via");
                 startActivity(shareIntent);
-
+                break;
         }
+
         return true;
     }
 }

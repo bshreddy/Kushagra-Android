@@ -1,41 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:showIn="navigation_view">
 
-    <group
-        android:id="@+id/menu_account_group">
+    <group android:id="@+id/menu_account_group">
 
         <item
             android:id="@+id/menu_bookmarks"
-            android:title="@string/bookmarked"
-            android:icon="@drawable/ic_bookmark_24dp"/>
+            android:icon="@drawable/ic_bookmark_24dp"
+            android:title="@string/bookmarked" />
     </group>
 
-    <group
-        android:id="@+id/menu_settings_group">
+    <group android:id="@+id/menu_settings_group">
         <item
             android:id="@+id/menu_server"
-            android:title="@string/configure_server"
-            android:icon="@drawable/ic_server_24dp"/>
+            android:icon="@drawable/ic_server_24dp"
+            android:title="@string/configure_server" />
         <item
             android:id="@+id/menu_settings"
-            android:title="@string/settings"
-            android:icon="@drawable/ic_settings_24dp"/>
+            android:icon="@drawable/ic_settings_24dp"
+            android:title="@string/settings" />
 
     </group>
 
-    <group
-        android:id="@+id/menu_other_group">
+    <group android:id="@+id/menu_other_group">
 
         <item
             android:id="@+id/menu_help"
-            android:title="@string/help"
-            android:icon="@drawable/ic_help_24dp"/>
+            android:icon="@drawable/ic_help_24dp"
+            android:title="@string/help" />
         <item
             android:id="@+id/menu_invite"
-            android:title="@string/invite_a_friend"
-            android:icon="@drawable/ic_invite_24dp"/>
+            android:icon="@drawable/ic_invite_24dp"
+            android:title="@string/invite_a_friend" />
+    </group>
+
+    <group android:id="@+id/menu_account_options_group">
+
+        <item
+            android:id="@+id/menu_signout"
+            android:icon="@drawable/ic_signout_24dp"
+            android:title="Sign Out"/>
     </group>
 
 </menu>
