@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        
         setupUI();
         setupFirebase();
     }
