@@ -5,27 +5,37 @@
 
     <group
         android:id="@+id/menu_account_group">
-        <item
-            android:id="@+id/menu_profile"
-            android:title="Profile"
-            android:icon="@drawable/ic_profile_24px"/>
+
         <item
             android:id="@+id/menu_bookmarks"
-            android:title="Bookmarks"
+            android:title="@string/bookmarked"
             android:icon="@drawable/ic_bookmark_24dp"/>
     </group>
 
     <group
-        android:id="@+id/manu_other_group">
+        android:id="@+id/menu_settings_group">
+        <item
+            android:id="@+id/menu_server"
+            android:title="@string/configure_server"
+            android:icon="@drawable/ic_server_24dp"/>
         <item
             android:id="@+id/menu_settings"
-            android:title="Settings"
+            android:title="@string/settings"
             android:icon="@drawable/ic_settings_24dp"/>
+
+    </group>
+
+    <group
+        android:id="@+id/menu_other_group">
 
         <item
             android:id="@+id/menu_help"
-            android:title="Help"
+            android:title="@string/help"
             android:icon="@drawable/ic_help_24dp"/>
+        <item
+            android:id="@+id/menu_invite"
+            android:title="@string/invite_a_friend"
+            android:icon="@drawable/ic_invite_24dp"/>
     </group>
 
 </menu>

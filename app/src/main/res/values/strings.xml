@@ -8,6 +8,11 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="default_uname">Username</string>
     <string name="default_email">user.name@argi.ai.com</string>
+    <string name="bookmarked">Bookmarked</string>
+    <string name="configure_server">Configure Server</string>
+    <string name="settings">Settings</string>
+    <string name="invite_a_friend">Invite a Friend</string>
+    <string name="help">Help</string>
 
 
 </resources>
