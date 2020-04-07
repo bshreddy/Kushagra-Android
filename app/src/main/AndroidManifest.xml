@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.project.crop_prediction">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -19,14 +20,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".WebActivity" android:parentActivityName=".MainActivity"></activity>
         <activity
             android:name=".detail.DetailActivity"
             android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.DrawerLayout">
+            android:theme="@style/AppTheme.DrawerLayout"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,7 +41,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBj2Ou7yDBEOieH_XQAB5i7z8NBbdX02kc"/>
+            android:value="AIzaSyBj2Ou7yDBEOieH_XQAB5i7z8NBbdX02kc" />
     </application>
 
 </manifest>

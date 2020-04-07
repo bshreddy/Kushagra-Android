@@ -22,4 +22,5 @@
     <color name="colorOnError">#FFFFFF</color>
 
     <color name="imageBackgroud">#DEDEDE</color>
+    <color name="red">#FF3B30</color>
 </resources>
