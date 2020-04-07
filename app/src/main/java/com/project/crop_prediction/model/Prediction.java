@@ -1,6 +1,7 @@
 package com.project.crop_prediction.model;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -17,8 +18,11 @@ import com.project.crop_prediction.network.VolleyMultipartRequest;
 import com.project.crop_prediction.network.VolleySingleton;
 
 import java.io.ByteArrayOutputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class Prediction implements Parcelable {
 
@@ -34,10 +38,6 @@ public class Prediction implements Parcelable {
         }
     };
 
-    //TODO: create a getUrl(Kind kind) function that reads baseURL from SharedPreferences
-    // and returns the URL
-    private static String cropUrl = "http://192.168.1.10:8000/crop";
-    private static String diseaseUrl = "http://192.168.1.10:8000/disease";
     private static String cropClasses[] = {"coffee", "cotton", "jute", "maize", "millet", "rice", "sugarcane", "tea", "tomato", "wheat"};
     private static String diseaseClasses[] = {"Apple - Apple scab", "Apple - Black rot", "Apple - Cedar apple rust", "Apple - Healthy",
             "Blueberry - Healthy", "Cherry (including sour) - Powdery mildew", "Cherry (including sour) - healthy",
@@ -75,21 +75,11 @@ public class Prediction implements Parcelable {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
         final byte[] imageBytes = outputStream.toByteArray();
 
-        String url = (kind == Kind.crop) ? cropUrl : diseaseUrl;
-
+        String url = getURL(context, kind);
         VolleyMultipartRequest request = new VolleyMultipartRequest(Request.Method.POST, url,
                 new Response.Listener<NetworkResponse>() {
                     @Override
                     public void onResponse(NetworkResponse response) {
-//                            JSONObject obj = new JSONObject(new String(response.data));
-//                            int pred = obj.getInt("pred");
-//                            Kind kind = (obj.getString("kind").equalsIgnoreCase("crop")) ? Kind.crop : Kind.disease;
-//
-//                            JSONArray cnf = obj.getJSONArray("cnf");
-//                            double confidences[] = new double[10];
-//
-//                            for(int i = 0; i < 10; i++)
-//                                confidences[i] = cnf.getInt(i);
                         Gson gson = new GsonBuilder()
                                 .registerTypeAdapter(Prediction.class, new PredictionDeserializer())
                                 .create();
@@ -122,6 +112,22 @@ public class Prediction implements Parcelable {
         };
 
         VolleySingleton.getInstance(context).addToRequestQueue(request);
+    }
+
+    public static String getServerURL(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("defaults", context.MODE_PRIVATE);
+        return sharedPreferences.getString("ServerURL", "http://localhost:8000");
+    }
+
+    public static void setServerURL(Context context, String serverURL) {
+        SharedPreferences.Editor editor = context.getSharedPreferences("defaults", context.MODE_PRIVATE).edit();
+        editor.putString("ServerURL", serverURL);
+        editor.commit();
+    }
+
+    public static String getURL(Context context, Kind kind) {
+        String baseURL = getServerURL(context);
+        return (kind == Kind.crop) ? baseURL + "/crop" : baseURL + "/disease";
     }
 
     @Override
