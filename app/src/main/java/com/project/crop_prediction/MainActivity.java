@@ -1,6 +1,7 @@
 package com.project.crop_prediction;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -9,6 +10,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -210,7 +214,29 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                 break;
 
             case R.id.menu_server:
-                Toast.makeText(this, "menu_server", Toast.LENGTH_SHORT).show();
+                final EditText inp = new EditText(this);
+                AlertDialog.Builder builder=new AlertDialog.Builder(this);
+                builder.setMessage("Enter Server Address")
+                        .setView(inp)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String s=inp.getText().toString();
+                                if(!s.isEmpty())
+                                    Toast.makeText(getApplicationContext(),s,Toast.LENGTH_SHORT).show();
+                                else{
+                                    Toast.makeText(getApplicationContext(),"Enter a Valid Server Address",Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .create()
+                        .show();
                 break;
 
             case R.id.menu_settings:
@@ -218,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                 break;
 
             case R.id.menu_help:
-                Toast.makeText(this, "menu_help", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getApplicationContext(),WebActivity.class));
                 break;
 
             case R.id.menu_invite:
