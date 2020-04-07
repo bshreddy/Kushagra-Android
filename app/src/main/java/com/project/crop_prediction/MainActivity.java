@@ -153,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     }
 
     private void showUserLogin() {
+        Log.d(TAG, "showUserLogin: " + user);
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.EmailBuilder().build(),
                 new AuthUI.IdpConfig.GoogleBuilder().build());
@@ -216,25 +217,22 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             case R.id.menu_server:
                 final EditText inp = new EditText(this);
                 AlertDialog.Builder builder=new AlertDialog.Builder(this);
-                builder.setMessage("Enter Server Address")
+                builder.setTitle("Server Address")
+                        .setMessage("Enter address of AI Inference Server")
                         .setView(inp)
-                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                String s=inp.getText().toString();
-                                if(!s.isEmpty())
-                                    Toast.makeText(getApplicationContext(),s,Toast.LENGTH_SHORT).show();
+                                String serverAddress = inp.getText().toString();
+                                if(!serverAddress.isEmpty())
+                                    Toast.makeText(getApplicationContext(),serverAddress,Toast.LENGTH_SHORT).show();
+                                    //TODO: Change URLs in Prediction.java
                                 else{
                                     Toast.makeText(getApplicationContext(),"Enter a Valid Server Address",Toast.LENGTH_SHORT).show();
                                 }
                             }
                         })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        })
+                        .setNegativeButton("Cancel", null)
                         .create()
                         .show();
                 break;

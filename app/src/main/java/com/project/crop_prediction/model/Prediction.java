@@ -33,6 +33,9 @@ public class Prediction implements Parcelable {
             return new Prediction[size];
         }
     };
+
+    //TODO: create a getUrl(Kind kind) function that reads baseURL from SharedPreferences
+    // and returns the URL
     private static String cropUrl = "http://192.168.1.10:8000/crop";
     private static String diseaseUrl = "http://192.168.1.10:8000/disease";
     private static String cropClasses[] = {"coffee", "cotton", "jute", "maize", "millet", "rice", "sugarcane", "tea", "tomato", "wheat"};
@@ -51,6 +54,7 @@ public class Prediction implements Parcelable {
     public int predicted_idx;
     public Kind kind;
     public String classes[];
+
     protected Prediction(Parcel in) {
         image = in.readParcelable(Bitmap.class.getClassLoader());
         confidences = in.createDoubleArray();
@@ -58,6 +62,7 @@ public class Prediction implements Parcelable {
         classes = in.createStringArray();
         kind = (Kind) in.readSerializable();
     }
+
     public Prediction(int predicted_idx, double confidences[], Kind kind) {
         this.predicted_idx = predicted_idx;
         this.confidences = confidences;

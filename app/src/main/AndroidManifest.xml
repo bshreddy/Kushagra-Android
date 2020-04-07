@@ -20,12 +20,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".WebActivity"></activity>
-        <activity android:name=".ProfileActivity" />
+        <activity android:name=".WebActivity" android:parentActivityName=".MainActivity"></activity>
         <activity
             android:name=".detail.DetailActivity"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".MainActivity"

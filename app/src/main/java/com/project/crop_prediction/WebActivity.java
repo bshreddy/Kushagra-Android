@@ -7,12 +7,14 @@ import android.webkit.WebView;
 
 public class WebActivity extends AppCompatActivity {
 
+    private WebView webView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
 
-        WebView myWebView = (WebView) findViewById(R.id.webview);
-        myWebView.loadUrl("https://www.google.com/?gfe_rd=cr&ei=KYBdVeDFFePI8Afvr4D4Ag&gws_rd=cr&fg=1");
+        webView = findViewById(R.id.webView);
+        webView.loadUrl("https://www.google.com");
     }
 }
