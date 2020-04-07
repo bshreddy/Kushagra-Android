@@ -257,6 +257,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                 Intent shareIntent = Intent.createChooser(sendIntent, "Invite Friends Via");
                 startActivity(shareIntent);
                 break;
+            case R.id.menu_signout:
+                FirebaseAuth.getInstance().signOut();
         }
 
         return true;
