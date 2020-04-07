@@ -170,9 +170,17 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         user = firebaseAuth.getCurrentUser();
 
         if (user != null) {
-            navHeaderUname.setText(user.getDisplayName());
-            navHeaderEmail.setText(user.getEmail());
-            Glide.with(this).load(user.getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(navHeaderDP);
+            if(user.getDisplayName().isEmpty()){
+                navHeaderUname.setText(user.getEmail());
+                navHeaderEmail.setVisibility(View.GONE);
+                Glide.with(this).load(user.getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(navHeaderDP);
+            }
+            else{
+                navHeaderUname.setText(user.getDisplayName());
+                navHeaderEmail.setVisibility(View.VISIBLE);
+                navHeaderEmail.setText(user.getEmail());
+                Glide.with(this).load(user.getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(navHeaderDP);
+            }
         } else {
             navHeaderUname.setText(R.string.default_uname);
             navHeaderEmail.setText(R.string.default_email);
