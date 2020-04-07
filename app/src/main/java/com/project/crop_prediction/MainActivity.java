@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
@@ -92,6 +93,14 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
         NavigationView navigationView = findViewById(R.id.nav_drawer);
         navigationView.setNavigationItemSelectedListener(this);
+
+        Menu m=navigationView.getMenu();
+        if(BuildConfig.DEBUG){
+            m.findItem(R.id.menu_server).setVisible(true);
+        }
+        else{
+            m.findItem(R.id.menu_server).setVisible(false);
+        }
 
         View navigationHeaderView = navigationView.getHeaderView(0);
         navHeaderDP = navigationHeaderView.findViewById(R.id.nav_header_dp);
