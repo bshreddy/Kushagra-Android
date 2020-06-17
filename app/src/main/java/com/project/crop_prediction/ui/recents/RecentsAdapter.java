@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -49,6 +50,8 @@ public class RecentsAdapter extends RecyclerView.Adapter<RecentsAdapter.RecentsV
         } else {
             //TODO: Read image from Local File System ot fetch from Firebase Storage
         }
+
+
     }
 
     @Override
@@ -62,12 +65,14 @@ public class RecentsAdapter extends RecyclerView.Adapter<RecentsAdapter.RecentsV
 
     public interface OnClickListener{
         void onClick(int position);
+        void onBookmarkClick(int position);
     }
 
     public static class RecentsViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView imageView;
         public TextView title, subtitle;
+        public ImageButton bookmark;
 
         public RecentsViewHolder(View view, final OnClickListener clickListener) {
             super(view);
@@ -75,6 +80,7 @@ public class RecentsAdapter extends RecyclerView.Adapter<RecentsAdapter.RecentsV
             imageView = view.findViewById(R.id.recent_image);
             title = view.findViewById(R.id.recent_title);
             subtitle = view.findViewById(R.id.recent_subtitle);
+            bookmark = view.findViewById(R.id.bookmark_button);
 
             if(clickListener != null) {
                 view.setOnClickListener(new View.OnClickListener() {
@@ -84,6 +90,13 @@ public class RecentsAdapter extends RecyclerView.Adapter<RecentsAdapter.RecentsV
                     }
                 });
             }
+
+            bookmark.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    clickListener.onBookmarkClick(getAdapterPosition());
+                }
+            });
         }
     }
 
