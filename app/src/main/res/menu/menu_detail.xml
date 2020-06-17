@@ -11,9 +11,16 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/menu_bookmark"
+        android:icon="@drawable/ic_bookmark_outline_24dp"
+        android:title="Add to Bookmarks" />
+
+    <item
         android:id="@+id/menu_save_to_pdf"
         android:icon="@drawable/ic_save_docblack_24dp"
         android:title="Save to PDF" />
+
+
 
     <item
         android:id="@+id/menu_save_map_to_photos"
