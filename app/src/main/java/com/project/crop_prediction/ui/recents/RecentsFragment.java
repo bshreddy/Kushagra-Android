@@ -1,6 +1,7 @@
 package com.project.crop_prediction.ui.recents;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +25,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -65,6 +68,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
     private static final String TAG = "RecentsFragment";
     private static final String KIND_PARAM = "kind";
+    private static final String ONLYBKMK_PARAM = "bookmark";
     private static final int RC_CAPTURE = 1;
     private static final int RC_DETAIL = 2;
     private static final int RC_PERMISSIONS = 100;
@@ -80,17 +84,24 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
     private CollectionReference recentsRef;
+    private DocumentReference bookmarkedRef;
 
     private ArrayList<Recent> recents;
     private Prediction.Kind kind;
+    private boolean onlyBookmark;
     private FusedLocationProviderClient fusedLocationClient;
 
-    public static RecentsFragment newInstance(String kind) {
+    public static RecentsFragment newInstance(String kind, boolean onlyBookmark) {
         RecentsFragment fragment = new RecentsFragment();
         Bundle args = new Bundle();
         args.putString(KIND_PARAM, kind);
+        args.putBoolean(ONLYBKMK_PARAM, onlyBookmark);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public static RecentsFragment newInstance(String kind) {
+        return newInstance(kind, false);
     }
 
     @Override
@@ -100,11 +111,10 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
         if (getArguments() != null) {
             kind = getArguments().getString(KIND_PARAM).equalsIgnoreCase(Prediction.Kind.crop.rawValue) ? Prediction.Kind.crop : Prediction.Kind.disease;
-
+            onlyBookmark = getArguments().getBoolean(ONLYBKMK_PARAM);
             firebaseAuth = FirebaseAuth.getInstance();
             firebaseAuth.addAuthStateListener(this);
         }
-
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
     }
 
@@ -205,6 +215,30 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
         startActivity(intent);
     }
+    @Override
+    public void onBookmarkClick(final int position) {
+        final Recent recent = recents.get(position);
+
+        if(recent.id == null) {
+            // TODO: Show toast and do nothing
+            return;
+        }
+
+        recent.bookmarked = !recent.bookmarked;
+        ((RecentsAdapter.RecentsViewHolder)recyclerView.findViewHolderForAdapterPosition(position)).bookmark.setImageResource(
+                (recent.bookmarked ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp));
+
+        recentsRef.document(recent.id).update("bkmrkd", recent.bookmarked)
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        recent.bookmarked = !recent.bookmarked;
+                        ((RecentsAdapter.RecentsViewHolder)recyclerView.findViewHolderForAdapterPosition(position)).bookmark.setImageResource(
+                                (recent.bookmarked ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp));
+                    }
+                });
+
+    }
 
     private boolean arePermissionsGranted() {
         return (getActivity().checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
@@ -223,7 +257,14 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
         swipeRefreshLayout.setRefreshing(true);
 
         String kindFieldPath[] = {"pred", "kind"};
-        recentsRef.whereEqualTo(FieldPath.of(kindFieldPath), kind.rawValue)
+        Query recentQuery = null;
+        if(onlyBookmark) {
+            // TODO: Write query for bookmarked items
+        } else {
+            recentQuery = recentsRef.whereEqualTo(FieldPath.of(kindFieldPath), kind.rawValue);
+        }
+
+        recentQuery
                 .orderBy("crtdAt", Query.Direction.DESCENDING).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -235,7 +276,9 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
                                     .create();
 
                             for (DocumentSnapshot doc : task.getResult().getDocuments()) {
-                                recents.add(gson.fromJson(gson.toJsonTree(doc.getData()), Recent.class));
+                                Recent recent = gson.fromJson(gson.toJsonTree(doc.getData()), Recent.class);
+                                recent.id = doc.getId();
+                                recents.add(recent);
                             }
 
                             mAdapter.reloadData();
