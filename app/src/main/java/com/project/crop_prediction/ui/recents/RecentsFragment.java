@@ -228,8 +228,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
         ((RecentsAdapter.RecentsViewHolder)recyclerView.findViewHolderForAdapterPosition(position)).bookmark.setImageResource(
                 (recent.bookmarked ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp));
 
-        recentsRef.document(recent.id).update("bkmrkd", recent.bookmarked)
-                .addOnFailureListener(new OnFailureListener() {
+        updateBookmark(recent, new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         recent.bookmarked = !recent.bookmarked;
@@ -238,6 +237,11 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
                     }
                 });
 
+    }
+
+    public void updateBookmark(Recent recent, OnFailureListener onFailureListener) {
+        recentsRef.document(recent.id).update("bkmrkd", recent.bookmarked)
+                .addOnFailureListener(onFailureListener);
     }
 
     private boolean arePermissionsGranted() {

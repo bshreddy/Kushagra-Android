@@ -14,7 +14,12 @@ import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.project.crop_prediction.R;
 import com.project.crop_prediction.model.CropDetails;
 import com.project.crop_prediction.model.Prediction;
@@ -99,6 +104,29 @@ public class DetailActivity extends AppCompatActivity {
 
             case R.id.menu_save_prediction:
                 save();
+                return true;
+
+            case R.id.menu_bookmark:
+                recent.bookmarked = !recent.bookmarked;
+                item.setTitle((recent.bookmarked) ? "Remove from Bookmarks" : "Add to Bookmarks");
+                item.setIcon((recent.bookmarked) ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp);
+
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if(user == null) {
+                    // TODO: Show Error
+                } else {
+                    CollectionReference recentsRef = FirebaseFirestore.getInstance().collection("users").document(user.getUid()).collection("recents");
+                    recentsRef.document(recent.id).update("bkmrkd", recent.bookmarked)
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    recent.bookmarked = !recent.bookmarked;
+                                    item.setTitle((recent.bookmarked) ? "Remove from Bookmarks" : "Add to Bookmarks");
+                                    item.setIcon((recent.bookmarked) ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp);
+                                }
+                            });
+                }
+
                 return true;
         }
 
