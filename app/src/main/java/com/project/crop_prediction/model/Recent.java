@@ -1,8 +1,11 @@
 package com.project.crop_prediction.model;
 
+import android.content.Context;
+import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -23,6 +26,9 @@ public class Recent implements Parcelable {
     public Boolean bookmarked;
     public Date createdAt;
     public Coordinate coordinate;
+
+//    private static final File sdcard =
+//    public static final File picsFolder = new File(sdcard, "CropPrediction");
 
     public Recent(String id, Prediction prediction, Boolean bookmarked, Date createdAt, Coordinate coordinate) {
         this.id = id;

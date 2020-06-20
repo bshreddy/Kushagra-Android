@@ -1,18 +1,17 @@
 package com.project.crop_prediction.ui.recents;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -39,16 +39,16 @@ import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.project.crop_prediction.detail.DetailActivity;
 import com.project.crop_prediction.R;
-import com.project.crop_prediction.detail.DetailAdapter;
 import com.project.crop_prediction.model.Coordinate;
 import com.project.crop_prediction.model.CoordinateSerializer;
-import com.project.crop_prediction.model.CropDetails;
-import com.project.crop_prediction.model.CropDetailsDeserializer;
 import com.project.crop_prediction.model.Prediction;
 import com.project.crop_prediction.model.PredictionSerializer;
 import com.project.crop_prediction.model.Recent;
@@ -58,7 +58,6 @@ import com.project.crop_prediction.model.RecentSerializer;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -72,8 +71,6 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
     private static final int RC_CAPTURE = 1;
     private static final int RC_DETAIL = 2;
     private static final int RC_PERMISSIONS = 100;
-    private static final File sdcard = Environment.getExternalStorageDirectory();
-    private static final File picsFolder = new File(sdcard, "/Pictures/CropPrediction/");
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
@@ -84,12 +81,13 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
     private CollectionReference recentsRef;
-    private DocumentReference bookmarkedRef;
+    private StorageReference recentImagesRef;
 
     private ArrayList<Recent> recents;
     private Prediction.Kind kind;
-    private boolean onlyBookmark;
+    private boolean onlyBookmark, openCam;
     private FusedLocationProviderClient fusedLocationClient;
+    public  File picsDir;
 
     public static RecentsFragment newInstance(String kind, boolean onlyBookmark) {
         RecentsFragment fragment = new RecentsFragment();
@@ -115,7 +113,17 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
             firebaseAuth = FirebaseAuth.getInstance();
             firebaseAuth.addAuthStateListener(this);
         }
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
+
+        if(!arePermissionsGranted()) {
+            requestPermissions(new String[]{android.Manifest.permission.CAMERA,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION}, RC_PERMISSIONS);
+        }
+
+        picsDir = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "CropPrediction");
     }
 
     @Override
@@ -132,7 +140,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        mAdapter = new RecentsAdapter(getContext(), recents, this);
+        mAdapter = new RecentsAdapter(getContext(), recents, picsDir, this);
         recyclerView.setAdapter(mAdapter);
 
         fab = getActivity().findViewById(R.id.fab);
@@ -154,9 +162,14 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
         user = firebaseAuth.getCurrentUser();
 
         if (user != null) {
-            recentsRef = FirebaseFirestore.getInstance().collection("users").document(user.getUid()).collection("recents");
+            recentsRef = FirebaseFirestore.getInstance().collection("users")
+                    .document(user.getUid()).collection("recents");
+
+            recentImagesRef = FirebaseStorage.getInstance().getReference().child("/images");
+
         } else {
             recentsRef = null;
+            recentImagesRef = null;
         }
 
         loadData();
@@ -167,6 +180,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_CAPTURE && resultCode == getActivity().RESULT_OK) {
+            Log.d(TAG, "onActivityResult: ");
             getPrediction((Bitmap) data.getExtras().get("data"));
         } else if (requestCode == RC_DETAIL && resultCode == getActivity().RESULT_OK) {
             saveRecent((Recent) data.getExtras().getParcelable(DetailActivity.RECENT_PARAM));
@@ -182,9 +196,12 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
             for (int res : grantResults)
                 granted = granted && (res == PackageManager.PERMISSION_GRANTED);
 
-            if (granted)
-                startActivityForResult(new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), RC_CAPTURE);
-            else
+            if (granted) {
+                if(openCam) {
+                    openCam = false;
+                    startActivityForResult(new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), RC_CAPTURE);
+                }
+            } else
                 Toast.makeText(getContext(), "camera permission denied", Toast.LENGTH_LONG).show();
         }
     }
@@ -197,8 +214,10 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
     @Override
     public void onClick(View view) {
         if (arePermissionsGranted()) {
+            Log.d(TAG, "onClick: Permission granted");
             startActivityForResult(new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), RC_CAPTURE);
         } else
+            openCam = true;
             requestPermissions(new String[]{android.Manifest.permission.CAMERA,
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     android.Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -304,14 +323,13 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
             if (doc == null)
                 return;
 
-            File dir = new File(picsFolder, recent.prediction.getPredictedClass());
+            File dir = new File(picsDir, recent.prediction.getPredictedClass());
             if (!dir.exists())
                 dir.mkdirs();
 
             String id = doc.getId();
-            String imageName = user.getUid() + "-" + id + ".png";
-
-            File imageFile = new File(dir, imageName);
+            String imgName = recent.prediction.getPredictedClass() + "/" + user.getUid() + '-' + id + ".png";
+            File imageFile = new File(picsDir, imgName);
             imageFile.createNewFile();
             FileOutputStream outputStream = new FileOutputStream(imageFile);
             recent.prediction.image.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
@@ -319,7 +337,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
             outputStream.flush();
             outputStream.close();
 
-            // TODO: Save to Firebase Storage
+            recentImagesRef.child(imgName).putFile(Uri.fromFile(imageFile));
 
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(Recent.class, new RecentSerializer())

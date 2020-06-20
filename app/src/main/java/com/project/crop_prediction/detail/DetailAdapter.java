@@ -49,9 +49,6 @@ public class DetailAdapter extends RecyclerView.Adapter {
     private final int TYPE_ACTION = 4;
     private final int[] viewTypes = {TYPE_IMAGE, TYPE_INFO_LIST, TYPE_MAP};
 
-    private StorageReference storageReference;
-    private FirebaseUser user;
-
     private Context context;
     private Recent recent;
     private CropDetails cropDetails;
@@ -60,6 +57,9 @@ public class DetailAdapter extends RecyclerView.Adapter {
         this.context = context;
         this.recent = recent;
         cropDetails = null;
+
+//        user = FirebaseAuth.getInstance().getCurrentUser();
+//        storageReference = FirebaseStorage.getInstance().getReference().child("images/");
     }
 
     @Override
@@ -70,11 +70,6 @@ public class DetailAdapter extends RecyclerView.Adapter {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-        user= FirebaseAuth.getInstance().getCurrentUser();
-
-        String fileURL="/images/"+recent.prediction.getPredictedClass()+"/"+user.getUid()+"-"+recent.id+".png";
-        storageReference=FirebaseStorage.getInstance().getReferenceFromUrl(fileURL);
 
         RecyclerView.ViewHolder viewHolder = null;
 
@@ -124,10 +119,7 @@ public class DetailAdapter extends RecyclerView.Adapter {
                 if (recent.prediction.image != null)
                     imgHolder.imageView.setImageBitmap(recent.prediction.image);
                 else {
-                    Glide.with(context)
-                            .load(storageReference)
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(imgHolder.imageView);
+                    
                 }
 
                 break;
