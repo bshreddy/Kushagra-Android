@@ -56,7 +56,7 @@ public class Prediction implements Parcelable {
     public String classes[];
 
     protected Prediction(Parcel in) {
-        image = in.readParcelable(Bitmap.class.getClassLoader());
+//        image = in.readParcelable(Bitmap.class.getClassLoader());
         confidences = in.createDoubleArray();
         predicted_idx = in.readInt();
         classes = in.createStringArray();
@@ -132,7 +132,7 @@ public class Prediction implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(image, flags);
+//        dest.writeParcelable(image, flags);
         dest.writeDoubleArray(confidences);
         dest.writeInt(predicted_idx);
         dest.writeStringArray(classes);

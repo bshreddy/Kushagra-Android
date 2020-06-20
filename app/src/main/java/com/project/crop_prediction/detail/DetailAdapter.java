@@ -1,6 +1,7 @@
 package com.project.crop_prediction.detail;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +38,7 @@ import com.project.crop_prediction.model.CropDetailsDeserializer;
 import com.project.crop_prediction.model.InfoCell;
 import com.project.crop_prediction.model.Recent;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class DetailAdapter extends RecyclerView.Adapter {
@@ -49,17 +51,23 @@ public class DetailAdapter extends RecyclerView.Adapter {
     private final int TYPE_ACTION = 4;
     private final int[] viewTypes = {TYPE_IMAGE, TYPE_INFO_LIST, TYPE_MAP};
 
+    private FirebaseUser user;
+    private StorageReference recentImagesRef;
+    private File picsDir;
+
     private Context context;
     private Recent recent;
     private CropDetails cropDetails;
 
-    public DetailAdapter(Context context, Recent recent) {
+    public DetailAdapter(Context context, Recent recent, FirebaseUser user,
+                         StorageReference recentImagesRef, File picsDir) {
         this.context = context;
         this.recent = recent;
         cropDetails = null;
 
-//        user = FirebaseAuth.getInstance().getCurrentUser();
-//        storageReference = FirebaseStorage.getInstance().getReference().child("images/");
+        this.user = user;
+        this.recentImagesRef = recentImagesRef;
+        this.picsDir = picsDir;
     }
 
     @Override
@@ -111,16 +119,17 @@ public class DetailAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         switch (viewTypes[position]) {
             case TYPE_IMAGE:
-                ImageViewHolder imgHolder = (ImageViewHolder) holder;
+                final ImageViewHolder imgHolder = (ImageViewHolder) holder;
                 imgHolder.imageView.setImageResource(context.getResources()
                         .getIdentifier(recent.prediction.getPredictedClass(),
                                 "drawable", context.getPackageName()));
 
-                if (recent.prediction.image != null)
-                    imgHolder.imageView.setImageBitmap(recent.prediction.image);
-                else {
-                    
-                }
+                recent.getImage(user, recentImagesRef, picsDir, new Recent.OnSuccessListener() {
+                    @Override
+                    public void onSuccess(Bitmap image) {
+                        imgHolder.imageView.setImageBitmap(recent.prediction.image);
+                    }
+                });
 
                 break;
 

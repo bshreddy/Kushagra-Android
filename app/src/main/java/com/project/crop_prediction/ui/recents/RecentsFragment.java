@@ -82,12 +82,12 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
     private FirebaseUser user;
     private CollectionReference recentsRef;
     private StorageReference recentImagesRef;
+    private File picsDir;
 
     private ArrayList<Recent> recents;
     private Prediction.Kind kind;
     private boolean onlyBookmark, openCam;
     private FusedLocationProviderClient fusedLocationClient;
-    public  File picsDir;
 
     public static RecentsFragment newInstance(String kind, boolean onlyBookmark) {
         RecentsFragment fragment = new RecentsFragment();

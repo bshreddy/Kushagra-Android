@@ -78,45 +78,12 @@ public class RecentsAdapter extends RecyclerView.Adapter<RecentsAdapter.RecentsV
         holder.title.setText(recent.prediction.getPredictedName());
         holder.subtitle.setText("Some Details");
 
-        if(recent.prediction.image != null) {
-            holder.imageView.setImageBitmap(recent.prediction.image);
-        } else if(user != null && recentImagesRef != null) {
-            final String imgName = recent.prediction.getPredictedClass() + "/" + user.getUid() + '-' + recent.id + ".png";
-            File dir = new File(picsDir, recent.prediction.getPredictedClass());
-            final File imageFile = new File(picsDir, imgName);
-
-            if(imageFile.exists()) {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                recent.prediction.image = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
+        recent.getImage(user, recentImagesRef, picsDir, new Recent.OnSuccessListener() {
+            @Override
+            public void onSuccess(Bitmap image) {
                 holder.imageView.setImageBitmap(recent.prediction.image);
             }
-            else {
-                if (!dir.exists())
-                    dir.mkdirs();
-
-                Log.d(TAG, "onBindViewHolder: Starting");
-                recentImagesRef.child(imgName).getFile(imageFile)
-                        .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                try {
-                                    imageFile.createNewFile();
-
-                                    BitmapFactory.Options options = new BitmapFactory.Options();
-                                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                                    recent.prediction.image = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
-                                    holder.imageView.setImageBitmap(recent.prediction.image);
-                                } catch (IOException ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-                        });
-            }
-
-        }
-
-
+        });
     }
 
     @Override
