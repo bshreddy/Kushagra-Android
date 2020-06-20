@@ -220,7 +220,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
         final Recent recent = recents.get(position);
 
         if(recent.id == null) {
-            // TODO: Show toast and do nothing
+            Toast.makeText(getContext(),"Unknown Error",Toast.LENGTH_SHORT).show();
             return;
         }
 

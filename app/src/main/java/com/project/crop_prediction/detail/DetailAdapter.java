@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -20,8 +22,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.project.crop_prediction.R;
@@ -43,6 +49,9 @@ public class DetailAdapter extends RecyclerView.Adapter {
     private final int TYPE_ACTION = 4;
     private final int[] viewTypes = {TYPE_IMAGE, TYPE_INFO_LIST, TYPE_MAP};
 
+    private StorageReference storageReference;
+    private FirebaseUser user;
+
     private Context context;
     private Recent recent;
     private CropDetails cropDetails;
@@ -61,6 +70,12 @@ public class DetailAdapter extends RecyclerView.Adapter {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+        user= FirebaseAuth.getInstance().getCurrentUser();
+
+        String fileURL="/images/"+recent.prediction.getPredictedClass()+"/"+user.getUid()+"-"+recent.id+".png";
+        storageReference=FirebaseStorage.getInstance().getReferenceFromUrl(fileURL);
+
         RecyclerView.ViewHolder viewHolder = null;
 
         switch (viewType) {
@@ -106,12 +121,13 @@ public class DetailAdapter extends RecyclerView.Adapter {
                         .getIdentifier(recent.prediction.getPredictedClass(),
                                 "drawable", context.getPackageName()));
 
-
                 if (recent.prediction.image != null)
                     imgHolder.imageView.setImageBitmap(recent.prediction.image);
                 else {
-                    // TODO: Get Image from Local File System or Firebase storage
-                    //  and set to recent.prediction.image
+                    Glide.with(context)
+                            .load(storageReference)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(imgHolder.imageView);
                 }
 
                 break;

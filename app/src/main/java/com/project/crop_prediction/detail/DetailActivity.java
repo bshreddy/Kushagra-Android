@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -113,7 +114,7 @@ public class DetailActivity extends AppCompatActivity {
 
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if(user == null) {
-                    // TODO: Show Error
+                    Toast.makeText(getApplicationContext(),"Unknown Error Occurred",Toast.LENGTH_SHORT).show();
                 } else {
                     CollectionReference recentsRef = FirebaseFirestore.getInstance().collection("users").document(user.getUid()).collection("recents");
                     recentsRef.document(recent.id).update("bkmrkd", recent.bookmarked)
