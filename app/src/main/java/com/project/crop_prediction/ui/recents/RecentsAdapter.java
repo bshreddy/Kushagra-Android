@@ -44,6 +44,7 @@ public class RecentsAdapter extends RecyclerView.Adapter<RecentsAdapter.RecentsV
                         "drawable", context.getPackageName()));
         holder.title.setText(recent.prediction.getPredictedName());
         holder.subtitle.setText("Some Details");
+        holder.bookmark.setImageResource(recent.bookmarked ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp);
 
         if(recent.prediction.image != null) {
             holder.imageView.setImageBitmap(recent.prediction.image);
