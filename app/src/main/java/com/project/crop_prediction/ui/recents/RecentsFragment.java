@@ -26,7 +26,6 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -67,7 +66,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
     private static final String TAG = "RecentsFragment";
     private static final String KIND_PARAM = "kind";
-    private static final String ONLYBKMK_PARAM = "bookmark";
+    private static final String ONLYBOOKMARK_PARAM = "bookmark";
     private static final int RC_CAPTURE = 1;
     private static final int RC_DETAIL = 2;
     private static final int RC_PERMISSIONS = 100;
@@ -93,7 +92,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
         RecentsFragment fragment = new RecentsFragment();
         Bundle args = new Bundle();
         args.putString(KIND_PARAM, kind);
-        args.putBoolean(ONLYBKMK_PARAM, onlyBookmark);
+        args.putBoolean(ONLYBOOKMARK_PARAM, onlyBookmark);
         fragment.setArguments(args);
         return fragment;
     }
@@ -109,7 +108,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
         if (getArguments() != null) {
             kind = getArguments().getString(KIND_PARAM).equalsIgnoreCase(Prediction.Kind.crop.rawValue) ? Prediction.Kind.crop : Prediction.Kind.disease;
-            onlyBookmark = getArguments().getBoolean(ONLYBKMK_PARAM);
+            onlyBookmark = getArguments().getBoolean(ONLYBOOKMARK_PARAM);
             firebaseAuth = FirebaseAuth.getInstance();
             firebaseAuth.addAuthStateListener(this);
         }

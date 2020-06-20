@@ -3,8 +3,6 @@ package com.project.crop_prediction.detail;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -12,7 +10,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,7 +22,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.project.crop_prediction.R;
-import com.project.crop_prediction.model.CropDetails;
 import com.project.crop_prediction.model.Prediction;
 import com.project.crop_prediction.model.Recent;
 
@@ -107,6 +103,15 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.menu_bookmark);
+        item.setTitle((recent.bookmarked) ? "Remove from Bookmarks" : "Add to Bookmarks");
+        item.setIcon((recent.bookmarked) ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp);
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -122,10 +127,9 @@ public class DetailActivity extends AppCompatActivity {
 
             case R.id.menu_bookmark:
                 recent.bookmarked = !recent.bookmarked;
-                item.setTitle((recent.bookmarked) ? "Remove from Bookmarks" : "Add to Bookmarks");
-                item.setIcon((recent.bookmarked) ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp);
 
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                
                 if(user == null) {
                     Toast.makeText(getApplicationContext(),"Unknown Error Occurred",Toast.LENGTH_SHORT).show();
                 } else {
@@ -135,8 +139,6 @@ public class DetailActivity extends AppCompatActivity {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     recent.bookmarked = !recent.bookmarked;
-                                    item.setTitle((recent.bookmarked) ? "Remove from Bookmarks" : "Add to Bookmarks");
-                                    item.setIcon((recent.bookmarked) ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp);
                                 }
                             });
                 }
