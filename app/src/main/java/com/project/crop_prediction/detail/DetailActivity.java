@@ -3,8 +3,11 @@ package com.project.crop_prediction.detail;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -18,9 +21,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.project.crop_prediction.R;
 import com.project.crop_prediction.model.Prediction;
 import com.project.crop_prediction.model.Recent;
+
+import java.io.File;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -34,6 +41,10 @@ public class DetailActivity extends AppCompatActivity {
     private DetailAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private MaterialToolbar toolbar;
+
+    private FirebaseUser user;
+    private StorageReference recentImagesRef;
+    private  File picsDir;
 
     private Prediction.Kind kind;
     private Recent recent;
@@ -53,6 +64,10 @@ public class DetailActivity extends AppCompatActivity {
         kind = (Prediction.Kind) intent.getSerializableExtra(KIND_PARAM);
         isNew = intent.getBooleanExtra(ISNEW_PARAM, false);
         recent = intent.getParcelableExtra(RECENT_PARAM);
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        recentImagesRef = FirebaseStorage.getInstance().getReference().child("/images");
+        picsDir = new File(this.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "CropPrediction");
     }
 
     private void setupUI() {
@@ -73,7 +88,7 @@ public class DetailActivity extends AppCompatActivity {
 
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        mAdapter = new DetailAdapter(this, recent);
+        mAdapter = new DetailAdapter(this, recent, user, recentImagesRef, picsDir);
         recyclerView.setAdapter(mAdapter);
     }
 
@@ -116,8 +131,9 @@ public class DetailActivity extends AppCompatActivity {
                 recent.bookmarked = !recent.bookmarked;
 
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if (user == null) {
-                    // TODO: Show Error
+                
+                if(user == null) {
+                    Toast.makeText(getApplicationContext(),"Unknown Error Occurred",Toast.LENGTH_SHORT).show();
                 } else {
                     CollectionReference recentsRef = FirebaseFirestore.getInstance().collection("users").document(user.getUid()).collection("recents");
                     recentsRef.document(recent.id).update("bkmrkd", recent.bookmarked)

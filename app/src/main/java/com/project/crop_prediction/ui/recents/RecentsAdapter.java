@@ -1,6 +1,14 @@
 package com.project.crop_prediction.ui.recents;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,22 +17,47 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.project.crop_prediction.R;
 import com.project.crop_prediction.model.Recent;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 public class RecentsAdapter extends RecyclerView.Adapter<RecentsAdapter.RecentsViewHolder> {
 
+    private static final String TAG = "RecentsAdapter";
+
     private Context context;
     private ArrayList<Recent> recents;
     private OnClickListener clickListener;
+    private File picsDir;
+    private FirebaseUser user;
+    private StorageReference recentImagesRef;
 
-    public RecentsAdapter(Context context, ArrayList<Recent> recents, OnClickListener clickListener) {
+    public RecentsAdapter(Context context, ArrayList<Recent> recents,
+                          File picsDir, OnClickListener clickListener) {
         this.context = context;
         this.recents = recents;
+        this.picsDir = picsDir;
+        this.user = FirebaseAuth.getInstance().getCurrentUser();
+        this.recentImagesRef = FirebaseStorage.getInstance().getReference().child("images/");
         this.clickListener = clickListener;
     }
 
@@ -36,8 +69,8 @@ public class RecentsAdapter extends RecyclerView.Adapter<RecentsAdapter.RecentsV
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecentsViewHolder holder, int position) {
-        Recent recent = recents.get(position);
+    public void onBindViewHolder(@NonNull final RecentsViewHolder holder, int position) {
+        final Recent recent = recents.get(position);
 
         holder.imageView.setImageResource(context.getResources()
                 .getIdentifier(recent.prediction.getPredictedClass(),
@@ -46,13 +79,12 @@ public class RecentsAdapter extends RecyclerView.Adapter<RecentsAdapter.RecentsV
         holder.subtitle.setText("Some Details");
         holder.bookmark.setImageResource(recent.bookmarked ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp);
 
-        if(recent.prediction.image != null) {
-            holder.imageView.setImageBitmap(recent.prediction.image);
-        } else {
-            //TODO: Read image from Local File System ot fetch from Firebase Storage
-        }
-
-
+        recent.getImage(user, recentImagesRef, picsDir, new Recent.OnSuccessListener() {
+            @Override
+            public void onSuccess(Bitmap image) {
+                holder.imageView.setImageBitmap(recent.prediction.image);
+            }
+        });
     }
 
     @Override
