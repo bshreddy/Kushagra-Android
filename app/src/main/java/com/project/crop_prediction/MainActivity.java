@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
     @Override
     protected void onStop() {
-        firebaseAuth.removeAuthStateListener(this);
+//        firebaseAuth.removeAuthStateListener(this);
 
         super.onStop();
     }
