@@ -16,7 +16,7 @@
         android:id="@+id/nav_header_dp"
         android:layout_width="72dp"
         android:layout_height="72dp"
-        android:contentDescription="Navigation header"
+        android:contentDescription="@string/navigation_header_description"
         android:scaleType="centerCrop"
         app:srcCompat="@drawable/ic_header_account" />
 

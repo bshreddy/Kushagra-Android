@@ -207,7 +207,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
                     startActivityForResult(new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), RC_CAPTURE);
                 }
             } else
-                Toast.makeText(getContext(), "camera permission denied", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), getString(R.string.camera_permission_denied), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -246,21 +246,18 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
         final Recent recent = recents.get(position);
 
         if (recent.id == null) {
-            Toast.makeText(getContext(), "Unknown Error", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.unknown_error_message),
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 
         recent.bookmarked = !recent.bookmarked;
-//        ((RecentsAdapter.RecentsViewHolder) recyclerView.findViewHolderForAdapterPosition(position)).bookmark.setImageResource(
-//                (recent.bookmarked ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp));
         mAdapter.notifyBookmarkChanged(recyclerView, position);
 
         updateBookmark(recent, new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 recent.bookmarked = !recent.bookmarked;
-//                ((RecentsAdapter.RecentsViewHolder) recyclerView.findViewHolderForAdapterPosition(position)).bookmark.setImageResource(
-//                        (recent.bookmarked ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp));
                 mAdapter.notifyBookmarkChanged(recyclerView, position);
             }
         });
@@ -317,7 +314,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
                             swipeRefreshLayout.setRefreshing(false);
                         } else {
                             Snackbar.make(getActivity().findViewById(android.R.id.content),
-                                    "Umm! Unable to read data", Snackbar.LENGTH_LONG).show();
+                                    getString(R.string.file_read_error), Snackbar.LENGTH_LONG).show();
                         }
                     }
                 });

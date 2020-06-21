@@ -30,6 +30,7 @@ public class CropDetailsDeserializer implements JsonDeserializer<CropDetails> {
                 prods);
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     enum CodingKeys {
         typ("type"), techniquesUsed("tech"), varieties("vrts"),
         temp("temp"), rainfall("rain"), soil("soil"), majorProducers("prdcrs");

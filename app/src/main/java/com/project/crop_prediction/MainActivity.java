@@ -190,13 +190,13 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                 Glide.with(this).load(user.getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(navHeaderDP);
             }
 
-            navigationView.getMenu().findItem(R.id.menu_signout).setTitle("Sign Out");
+            navigationView.getMenu().findItem(R.id.menu_signout).setTitle(getString(R.string.sign_out));
         } else {
             navHeaderUname.setText(R.string.default_uname);
             navHeaderEmail.setText(R.string.default_email);
             navHeaderDP.setImageResource(R.drawable.ic_profile_24px);
 
-            navigationView.getMenu().findItem(R.id.menu_signout).setTitle("Sign In");
+            navigationView.getMenu().findItem(R.id.menu_signout).setTitle(getString(R.string.sign_in));
         }
     }
 
@@ -209,10 +209,12 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             Snackbar snackbar = null;
 
             if (resultCode == RESULT_OK) {
-                snackbar = Snackbar.make(findViewById(android.R.id.content), "Sign In Successful", Snackbar.LENGTH_LONG);
+                snackbar = Snackbar.make(findViewById(android.R.id.content),
+                        getString(R.string.sign_in_success_message), Snackbar.LENGTH_LONG);
             } else {
-                snackbar = Snackbar.make(findViewById(android.R.id.content), "Unable to Sign In", Snackbar.LENGTH_LONG);
-                snackbar.setAction("Try Again", new View.OnClickListener() {
+                snackbar = Snackbar.make(findViewById(android.R.id.content),
+                        getString(R.string.sign_in_error_message), Snackbar.LENGTH_LONG);
+                snackbar.setAction(getString(R.string.try_again), new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         showUserLogin();
@@ -242,22 +244,22 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                 serverAddrInp.setPadding(16, serverAddrInp.getPaddingTop(), 16, serverAddrInp.getPaddingBottom());
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Server Address")
-                        .setMessage("Enter address of AI Inference Server")
+                builder.setTitle(getString(R.string.debug_server_address_title))
+                        .setMessage(getString(R.string.debug_server_address_message))
                         .setView(serverAddrInp, 64, 8, 64, 8)
-                        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 String serverAddress = serverAddrInp.getText().toString();
                                 if (!serverAddress.isEmpty()) {
                                     Prediction.setServerURL(getApplicationContext(), serverAddress);
-                                    Toast.makeText(getApplicationContext(), "Server Address Saved", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), getString(R.string.debug_server_address_success), Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(getApplicationContext(), "Enter a Valid Server Address", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), getString(R.string.debug_server_address_error), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         })
-                        .setNegativeButton("Cancel", null)
+                        .setNegativeButton(getString(R.string.cancel), null)
                         .create()
                         .show();
                 break;
@@ -273,11 +275,11 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             case R.id.menu_invite:
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "Hey,\n\nCrop Prediction App is an AI-powered, " +
-                        "intuitive app that I use to identify my crops, crop diseases and get solutions.\n\n" +
-                        "Get it for free at Play Store");
+                sendIntent.putExtra(Intent.EXTRA_TEXT,
+                        getString(R.string.menu_navigation_invite_a_friend_message));
                 sendIntent.setType("text/*");
-                Intent shareIntent = Intent.createChooser(sendIntent, "Invite Friends Via");
+                Intent shareIntent = Intent.createChooser(sendIntent,
+                        getString(R.string.menu_navigation_invite_a_friend_title));
                 startActivity(shareIntent);
                 break;
             case R.id.menu_signout:

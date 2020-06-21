@@ -10,6 +10,7 @@ import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
 
+@SuppressWarnings("HardCodedStringLiteral")
 public class PredictionSerializer implements JsonSerializer<Prediction> {
 
     private static final String TAG = "PredictionSerializer";

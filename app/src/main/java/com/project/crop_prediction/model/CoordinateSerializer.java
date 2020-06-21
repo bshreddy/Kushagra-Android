@@ -9,6 +9,7 @@ import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
 
+@SuppressWarnings("HardCodedStringLiteral")
 public class CoordinateSerializer implements JsonSerializer<Coordinate> {
 
     private static final String TAG = "CoordinateSerializer";

@@ -13,6 +13,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.project.crop_prediction.R;
 
 
+@SuppressWarnings("HardCodedStringLiteral")
 public class PricesFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "PricesFragment";

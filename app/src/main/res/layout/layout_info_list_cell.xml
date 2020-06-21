@@ -12,7 +12,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Subtitle"
+        android:text="@string/subtitle"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,7 +29,7 @@
         android:layout_marginBottom="8dp"
         android:ellipsize="end"
 
-        android:text="Title"
+        android:text="@string/title"
         android:textAlignment="textEnd"
         android:textColor="@android:color/black"
         android:textSize="16sp"

@@ -109,7 +109,8 @@ public class DetailActivity extends AppCompatActivity implements DetailAdapter.O
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.menu_bookmark);
-        item.setTitle((recent.bookmarked) ? "Remove from Bookmarks" : "Add to Bookmarks");
+        item.setTitle((recent.bookmarked) ? this.getString(R.string.menu_detail_remove_from_bookmarks) :
+                this.getString(R.string.menu_detail_add_to_bookmarks));
         item.setIcon((recent.bookmarked) ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp);
 
         return super.onPrepareOptionsMenu(menu);
@@ -170,20 +171,20 @@ public class DetailActivity extends AppCompatActivity implements DetailAdapter.O
 
     private void confirmCancel() {
         new AlertDialog.Builder(this)
-                .setMessage("Are you sure?\nDo you want to save?")
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                .setMessage(this.getString(R.string.detail_confirm_message))
+                .setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         DetailActivity.this.save();
                     }
                 })
-                .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         DetailActivity.this.close();
                     }
                 })
-                .setNeutralButton("Cancel", null)
+                .setNeutralButton(getString(R.string.cancel), null)
                 .create()
                 .show();
     }
@@ -210,7 +211,8 @@ public class DetailActivity extends AppCompatActivity implements DetailAdapter.O
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
             if (user == null) {
-                Toast.makeText(getApplicationContext(), "Unknown Error Occurred", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), getString(R.string.unknown_error_message),
+                        Toast.LENGTH_SHORT).show();
             } else {
                 CollectionReference recentsRef = FirebaseFirestore.getInstance().collection("users").document(user.getUid()).collection("recents");
                 recentsRef.document(recent.id).update("bkmrkd", recent.bookmarked)

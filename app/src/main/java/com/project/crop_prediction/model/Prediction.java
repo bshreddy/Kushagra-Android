@@ -35,6 +35,7 @@ public class Prediction implements Parcelable {
         }
     };
 
+//    TODO: Convert to String Array in strings.xml
     private static String[] cropClasses = {"coffee", "cotton", "jute", "maize", "millet", "rice", "sugarcane", "tea", "tomato", "wheat"};
     private static String[] diseaseClasses = {"Apple - Apple scab", "Apple - Black rot", "Apple - Cedar apple rust", "Apple - Healthy",
             "Blueberry - Healthy", "Cherry (including sour) - Powdery mildew", "Cherry (including sour) - healthy",

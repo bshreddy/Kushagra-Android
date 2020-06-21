@@ -13,26 +13,26 @@
     <item
         android:id="@+id/menu_bookmark"
         android:icon="@drawable/ic_bookmark_outline_24dp"
-        android:title="Add to Bookmarks" />
+        android:title="@string/menu_detail_add_to_bookmarks" />
 
     <item
         android:id="@+id/menu_save_to_pdf"
         android:icon="@drawable/ic_save_docblack_24dp"
-        android:title="Save to PDF" />
+        android:title="@string/menu_detial_save_to_pdf" />
 
     <item
         android:id="@+id/menu_save_image_to_photos"
         android:icon="@drawable/ic_photo_24dp"
-        android:title="Save Image to Photos" />
+        android:title="@string/menu_detail_save_image_to_photos" />
 
     <item
         android:id="@+id/menu_save_map_to_photos"
         android:icon="@drawable/ic_map_24dp"
-        android:title="Save Map to Photos" />
+        android:title="@string/menu_detail_save_map_to_photos" />
 
     <item
         android:id="@+id/menu_delete"
         android:icon="@drawable/ic_delete_24dp"
-        android:title="Delete" />
+        android:title="@string/delete" />
 
 </menu>
