@@ -80,10 +80,24 @@ public class DetailActivity extends AppCompatActivity implements DetailAdapter.O
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         if (isNew) {
-            getSupportActionBar().setTitle("New " + kind.capitalized() + " Detection");
+            String title;
+            if(kind == Prediction.Kind.crop)
+                title = getString(R.string.new_crop_detection_title);
+            else
+                title = getString(R.string.new_disease_detection_title);
+
+            getSupportActionBar().setTitle(title);
             toolbar.setNavigationIcon(R.drawable.ic_close_24dp);
-        } else
-            getSupportActionBar().setTitle(kind.capitalized() + " Details");
+        } else {
+            String title;
+            if(kind == Prediction.Kind.crop)
+                title = getString(R.string.crop_details_title);
+            else
+                title = getString(R.string.disease_details_title);
+
+            getSupportActionBar().setTitle(title);
+        }
+
 
         recyclerView = findViewById(R.id.detail_recycler);
         recyclerView.setHasFixedSize(true);
