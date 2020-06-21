@@ -46,6 +46,7 @@
     <!--  Recent Card  -->
     <string name="recent_card_bookmark_description">Recent bookmark</string>
     <string name="recent_card_image_view_description">Recent Card Image</string>
+    <string name="recent_card_subtitle">Some Details</string>
 
     <!--  Bottom Tab Bar  -->
     <string name="menu_bottom_crop">Crop</string>
@@ -69,5 +70,20 @@
     <string name="menu_detial_save_to_pdf">Save to PDF</string>
     <string name="menu_detail_save_image_to_photos">Save Image to Photos</string>
     <string name="menu_detail_save_map_to_photos">Save Map to Photos</string>
+
+    <!--  Models  -->
+    <string name="not_available">N/A</string>
+    <string name="info_subtitle_name">Name</string>
+    <string name="info_subtitle_latitude">Latitude</string>
+    <string name="info_subtitle_longitude">Longitude</string>
+    <string name="info_subtitle_altitude">Altitude</string>
+    <string name="info_subtitle_type">Type</string>
+    <string name="info_subtitle_technique_used">Techniques Used</string>
+    <string name="info_subtitle_varieties">Varieties</string>
+    <string name="info_subtitle_temp">Temp</string>
+    <string name="info_subtitle_rainfall">Rainfall</string>
+    <string name="info_subtitle_soil">Soil</string>
+    <string name="info_subtitle_highest_producer">Highest Producer</string>
+    <string name="info_subtitle_major_producers">Major Producers</string>
 
 </resources>

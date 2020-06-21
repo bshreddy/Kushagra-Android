@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="crop_classes">
+        <item>కాఫీ</item>
+        <item>పత్తి</item>
+        <item>జనపనార</item>
+        <item>మొక్కజొన్న</item>
+        <item>జొన్నలు</item>
+        <item>వరి</item>
+        <item>చెరుకుగడ</item>
+        <item>టీ</item>
+        <item>టమోటా</item>
+        <item>గోధుమ</item>
+    </string-array>
+
+    <string-array name="disease_classes">
+        <item>Apple - Apple scab</item>
+        <item>Apple - Black rot</item>
+        <item>Apple - Cedar apple rust</item>
+        <item>Apple - Healthy</item>
+        <item>Blueberry - Healthy</item>
+        <item>Cherry (including sour) - Powdery mildew</item>
+        <item>Cherry (including sour) - healthy</item>
+        <item>Corn - Cercospora leaf spot Gray leaf spot</item>
+        <item>Corn - Common rust </item>
+        <item>Corn - Northern Leaf Blight</item>
+        <item>Corn - Healthy</item>
+        <item>Grape - Black rot</item>
+        <item>Grape - Esca (Black Measles)</item>
+        <item>Grape - Leaf blight (Isariopsis Leaf Spot)</item>
+        <item>Grape - Healthy</item>
+        <item>Orange - Haunglongbing (Citrus greening)</item>
+        <item>Peach - Bacterial spot", "Peach - Healthy</item>
+        <item>Pepper, bell - Bacterial spot</item>
+        <item>Pepper, bell - Healthy</item>
+        <item>Potato - Early blight</item>
+        <item>Potato - Late blight</item>
+        <item>Potato - Healthy</item>
+        <item>Raspberry - Healthy</item>
+        <item>Soybean - Healthy</item>
+        <item>Squash - Powdery mildew</item>
+        <item>Strawberry - Leaf scorch</item>
+        <item>Strawberry - healthy</item>
+        <item>Tomato - Bacterial spot</item>
+        <item>Tomato - Early blight</item>
+        <item>Tomato - Late blight</item>
+        <item>Tomato - Leaf Mold</item>
+        <item>Tomato - Septoria leaf spot</item>
+        <item>Tomato - Spider mites, Two-spotted spider mite</item>
+        <item>Tomato - Target Spot</item>
+        <item>Tomato - Tomato Yellow Leaf Curl Virus</item>
+        <item>Tomato - Tomato mosaic virus</item>
+        <item>Tomato - Health</item>
+    </string-array>
+</resources>

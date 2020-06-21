@@ -46,6 +46,7 @@
     <!--  Recent Card  -->
     <string name="recent_card_bookmark_description">ఇటీవలి బుక్ మార్క్</string>
     <string name="recent_card_image_view_description">ఇటీవలి కార్డ్ చిత్రం</string>
+    <string name="recent_card_subtitle">కొన్ని వివరాలు</string>
 
     <!--  Bottom Tab Bar  -->
     <string name="menu_bottom_crop">పంట</string>
@@ -69,5 +70,20 @@
     <string name="menu_detial_save_to_pdf">PDF లో సేవ్ చేయండి</string>
     <string name="menu_detail_save_image_to_photos">పంట చిత్రాన్ని ఫోటోలలో సేవ్ చేయండి</string>
     <string name="menu_detail_save_map_to_photos">ఫోటోలలో మ్యాప్‌ను సేవ్ చేయండి</string>
+
+    <!--  Models  -->
+    <string name="not_available">అందుబాటులో లేదు</string>
+    <string name="info_subtitle_name">పేరు</string>
+    <string name="info_subtitle_latitude">అక్షాంశం</string>
+    <string name="info_subtitle_longitude">రేఖాంశం</string>
+    <string name="info_subtitle_altitude">ఎత్తు</string>
+    <string name="info_subtitle_type">వర్గం</string>
+    <string name="info_subtitle_technique_used">ఉపయోగించిన పద్ధతులు</string>
+    <string name="info_subtitle_varieties">రకాలు</string>
+    <string name="info_subtitle_temp">ఉష్ణోగ్రత</string>
+    <string name="info_subtitle_rainfall">వర్షపాతం</string>
+    <string name="info_subtitle_soil">నేల రకం</string>
+    <string name="info_subtitle_highest_producer">అత్యధిక నిర్మాత</string>
+    <string name="info_subtitle_major_producers">ప్రధాన నిర్మాతలు</string>
 
 </resources>

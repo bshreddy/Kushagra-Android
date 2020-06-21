@@ -150,10 +150,10 @@ public class DetailAdapter extends RecyclerView.Adapter {
 
     private ArrayList<InfoCell> getInfoList() {
         ArrayList<InfoCell> infos = new ArrayList<>();
-        infos.addAll(recent.getInfoList());
+        infos.addAll(recent.getInfoList(context));
 
         if (cropDetails != null)
-            infos.addAll(cropDetails.getInfoList());
+            infos.addAll(cropDetails.getInfoList(context));
         return infos;
     }
 
