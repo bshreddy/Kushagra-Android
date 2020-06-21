@@ -1,6 +1,7 @@
 package com.project.crop_prediction.ui.recents;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -273,7 +275,8 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
         return (getActivity().checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
                 getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
                 getActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED);
+                getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                getActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED);
     }
 
     private void loadData() {
@@ -374,14 +377,14 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
     private void getPrediction(Bitmap img) {
         Prediction.predict(getContext(), kind, img, new Prediction.PredictionListener() {
 
+            @SuppressLint("MissingPermission")
             @Override
             public void onCropPrediction(final Prediction prediction) {
                 if (prediction == null) {
                     Log.d(TAG, "onComplete: Error");
                     return;
                 }
-
-                fusedLocationClient.getLastLocation()
+                    fusedLocationClient.getLastLocation()
                         .addOnCompleteListener(new OnCompleteListener<Location>() {
                             @Override
                             public void onComplete(@NonNull Task<Location> task) {
