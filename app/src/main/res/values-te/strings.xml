@@ -83,7 +83,7 @@
     <string name="info_subtitle_temp">ఉష్ణోగ్రత</string>
     <string name="info_subtitle_rainfall">వర్షపాతం</string>
     <string name="info_subtitle_soil">నేల రకం</string>
-    <string name="info_subtitle_highest_producer">అత్యధిక నిర్మాత</string>
-    <string name="info_subtitle_major_producers">ప్రధాన నిర్మాతలు</string>
+    <string name="info_subtitle_highest_producer">అత్యధిక ఉత్పత్తిదారుడు</string>
+    <string name="info_subtitle_major_producers">ప్రధాన ఉత్పత్తిదారులు</string>
 
 </resources>
