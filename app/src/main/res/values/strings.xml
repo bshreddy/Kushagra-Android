@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Crop Prediction</string>
+    <string name="app_name">Kushagra</string>
 
     <string name="title">Title</string>
     <string name="subtitle">Subtitle</string>
@@ -24,12 +24,12 @@
     <string name="navigation_header_description">Navigation header</string>
     <string name="default_uname">Username</string>
     <string name="default_email">user.name@argi.ai.com</string>
-    <string name="menu_navigation_bookmarked">Bookmarked</string>
+    <string name="menu_navigation_bookmarked">Bookmarks</string>
     <string name="menu_navigation_configure_server">Configure Server</string>
     <string name="menu_navigation_settings">Settings</string>
     <string name="menu_navigation_invite_a_friend">Invite a Friend</string>
     <string name="menu_navigation_invite_a_friend_title">Invite Friends via</string>
-    <string name="menu_navigation_invite_a_friend_message">Hey,\n\nCrop Prediction App is an AI-powered,
+    <string name="menu_navigation_invite_a_friend_message">Hey,\n\nKushagra App is an AI-powered,
         intuitive app that I use to identify my crops, crop diseases and get solutions.\n\n
         Get it for free at Play Store</string>
 

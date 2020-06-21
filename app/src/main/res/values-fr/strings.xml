@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Prédiction de Culture</string>
+    <string name="app_name">Kushagra</string>
 
     <string name="title">Titre</string>
     <string name="subtitle">Sous-titre</string>
@@ -29,10 +29,9 @@
     <string name="menu_navigation_settings">Paramètres</string>
     <string name="menu_navigation_invite_a_friend">Invite un Ami</string>
     <string name="menu_navigation_invite_a_friend_title">Inviter des Amis via</string>
-    <string name="menu_navigation_invite_a_friend_message">Hé,\n\nPrédiction de Culture App est une
-        application intuitive et optimisée par l\'AI que j\'utilise pour identifier mes cultures,
-        les maladies des cultures et trouver des solutions.\n\nObtenez-le
-        gratuitement sur Play Store</string>
+    <string name="menu_navigation_invite_a_friend_message">Hé,\n\nKushagra App est une application
+        intuitive et optimisée par l\'AI que j\'utilise pour identifier mes cultures, les maladies
+        des cultures et trouver des solutions.\n\nObtenez-le gratuitement sur Play Store</string>
 
     <string name="navigation_crop_title">Vos Cultures</string>
     <string name="navigation_disease_title">Maladies des cultures</string>
