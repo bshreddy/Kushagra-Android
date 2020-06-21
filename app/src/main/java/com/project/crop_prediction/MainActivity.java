@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -71,8 +72,15 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        firebaseAuth.addAuthStateListener(this);
+    }
+
+    @Override
     protected void onStop() {
-//        firebaseAuth.removeAuthStateListener(this);
+        firebaseAuth.removeAuthStateListener(this);
 
         super.onStop();
     }
@@ -86,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         fab = findViewById(R.id.fab);
         bottomNav = findViewById(R.id.bottom_navigation);
 
-        NavigationView navigationView = findViewById(R.id.nav_drawer);
+        navigationView = findViewById(R.id.nav_drawer);
         navigationView.setNavigationItemSelectedListener(this);
 
         if (!BuildConfig.DEBUG)
@@ -134,7 +142,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
     private void setupFirebase() {
         firebaseAuth = FirebaseAuth.getInstance();
-        firebaseAuth.addAuthStateListener(this);
 
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true)
@@ -160,7 +167,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         startActivityForResult(AuthUI.getInstance()
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
-                .setIsSmartLockEnabled(false)
                 .build(), RC_SIGN_IN);
     }
 
@@ -180,12 +186,14 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                 navHeaderEmail.setText(user.getEmail());
                 Glide.with(this).load(user.getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(navHeaderDP);
             }
+
+            navigationView.getMenu().findItem(R.id.menu_signout).setTitle("Sign Out");
         } else {
             navHeaderUname.setText(R.string.default_uname);
             navHeaderEmail.setText(R.string.default_email);
             navHeaderDP.setImageResource(R.drawable.ic_profile_24px);
 
-            showUserLogin();
+            navigationView.getMenu().findItem(R.id.menu_signout).setTitle("Sign In");
         }
     }
 
@@ -217,6 +225,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     @SuppressLint("RestrictedApi")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        drawerLayout.closeDrawer(GravityCompat.START, true);
+
         switch (item.getItemId()) {
             case R.id.menu_bookmarks:
                 Toast.makeText(this, "menu_bookmarks", Toast.LENGTH_SHORT).show();
@@ -268,7 +278,10 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                 startActivity(shareIntent);
                 break;
             case R.id.menu_signout:
-                FirebaseAuth.getInstance().signOut();
+                if(user == null)
+                    showUserLogin();
+                else
+                    FirebaseAuth.getInstance().signOut();
         }
 
         return true;
