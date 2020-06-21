@@ -80,9 +80,9 @@
     <string name="info_subtitle_type">Type</string>
     <string name="info_subtitle_technique_used">Techniques Used</string>
     <string name="info_subtitle_varieties">Varieties</string>
-    <string name="info_subtitle_temp">Temp</string>
+    <string name="info_subtitle_temp">Temperature</string>
     <string name="info_subtitle_rainfall">Rainfall</string>
-    <string name="info_subtitle_soil">Soil</string>
+    <string name="info_subtitle_soil">Soil Type</string>
     <string name="info_subtitle_highest_producer">Highest Producer</string>
     <string name="info_subtitle_major_producers">Major Producers</string>
 

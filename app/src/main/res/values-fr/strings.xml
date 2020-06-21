@@ -69,4 +69,19 @@
     <string name="menu_detail_save_image_to_photos">Enregistrer l\'Image à les Photos</string>
     <string name="menu_detail_save_map_to_photos">Enregistrer la Carte à les Photos</string>
 
+    <!--  Models  -->
+    <string name="not_available">N/A</string>
+    <string name="info_subtitle_name">Nom</string>
+    <string name="info_subtitle_latitude">Latitude</string>
+    <string name="info_subtitle_longitude">Longitude</string>
+    <string name="info_subtitle_altitude">Altitude</string>
+    <string name="info_subtitle_type">Type</string>
+    <string name="info_subtitle_technique_used">Techniques Utilisées</string>
+    <string name="info_subtitle_varieties">Variétés</string>
+    <string name="info_subtitle_temp">Température</string>
+    <string name="info_subtitle_rainfall">Précipitations</string>
+    <string name="info_subtitle_soil">Type de Sol</string>
+    <string name="info_subtitle_highest_producer">Meilleur producteur</string>
+    <string name="info_subtitle_major_producers">Grands producteurs</string>
+
 </resources>
