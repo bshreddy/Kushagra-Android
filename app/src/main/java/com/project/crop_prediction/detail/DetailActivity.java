@@ -130,6 +130,22 @@ public class DetailActivity extends AppCompatActivity implements DetailAdapter.O
             case R.id.menu_bookmark:
                 onActionPerformed(ActionCardAdapter.Action.bookmark);
                 return true;
+
+            case R.id.menu_save_to_pdf:
+                onActionPerformed(ActionCardAdapter.Action.saveToPDF);
+                return true;
+
+            case R.id.menu_save_image_to_photos:
+                onActionPerformed(ActionCardAdapter.Action.saveImage);
+                return true;
+
+            case R.id.menu_save_map_to_photos:
+                onActionPerformed(ActionCardAdapter.Action.saveMap);
+                return true;
+
+            case R.id.menu_delete:
+                onActionPerformed(ActionCardAdapter.Action.delete);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -199,6 +215,14 @@ public class DetailActivity extends AppCompatActivity implements DetailAdapter.O
                             }
                         });
             }
+        } else if(action == ActionCardAdapter.Action.saveToPDF) {
+//            TODO: Implement Report Rendering
+        } else if(action == ActionCardAdapter.Action.saveImage) {
+//            TODO: Save image to photos
+        } else if(action == ActionCardAdapter.Action.saveMap) {
+//            TODO: Save map snapshot to photos
+        } else if(action == ActionCardAdapter.Action.delete) {
+//            TODO: Delete this recent
         }
     }
 }
