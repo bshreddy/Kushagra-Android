@@ -39,27 +39,19 @@ import java.util.ArrayList;
 
 public class DetailAdapter extends RecyclerView.Adapter {
 
-    public interface OnClickListener {
-        void onActionPerformed(ActionCardAdapter.Action action);
-    }
-
     private static final String TAG = "DetailAdapter";
-
     private final int TYPE_IMAGE = 1;
     private final int TYPE_INFO_LIST = 2;
     private final int TYPE_MAP = 3;
     private final int TYPE_ACTION = 4;
     private final int[] viewTypes = {TYPE_IMAGE, TYPE_INFO_LIST, TYPE_MAP, TYPE_ACTION};
-
     private FirebaseUser user;
     private StorageReference recentImagesRef;
     private File picsDir;
-
     private Context context;
     private Recent recent;
     private CropDetails cropDetails;
     private OnClickListener onClickListener;
-
     public DetailAdapter(Context context, Recent recent, FirebaseUser user,
                          StorageReference recentImagesRef, File picsDir,
                          OnClickListener onClickListener) {
@@ -167,20 +159,26 @@ public class DetailAdapter extends RecyclerView.Adapter {
     public void notifyBookmarkChanged(RecyclerView recyclerView) {
         int position = -1;
 
-        for(int i = 0; i < viewTypes.length; i++)
-            if(viewTypes[i] == TYPE_ACTION)
+        for (int i = 0; i < viewTypes.length; i++)
+            if (viewTypes[i] == TYPE_ACTION)
                 position = i;
 
-        if(position == -1)
+        if (position == -1)
             return;
 
-        ActionCardViewHolder viewHolder = (ActionCardViewHolder)recyclerView
+        ActionCardViewHolder viewHolder = (ActionCardViewHolder) recyclerView
                 .findViewHolderForAdapterPosition(position);
 
-        if(viewHolder == null)
+        if (viewHolder == null)
             return;
 
         viewHolder.notifyBookmarkChanged();
+    }
+
+    public interface OnClickListener {
+        void onActionPerformed(ActionCardAdapter.Action action);
+        void onImageClicked();
+        void onMapClicked();
     }
 
     private static class ImageViewHolder extends RecyclerView.ViewHolder {

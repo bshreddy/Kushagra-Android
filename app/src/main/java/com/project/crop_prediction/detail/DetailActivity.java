@@ -225,4 +225,14 @@ public class DetailActivity extends AppCompatActivity implements DetailAdapter.O
 //            TODO: Delete this recent
         }
     }
+
+    @Override
+    public void onImageClicked() {
+//            TODO: Display Image in full screen like in photos app
+    }
+
+    @Override
+    public void onMapClicked() {
+//            TODO: Display map in full screen like in google maps app
+    }
 }
