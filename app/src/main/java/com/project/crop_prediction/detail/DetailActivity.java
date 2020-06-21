@@ -29,7 +29,7 @@ import com.project.crop_prediction.model.Recent;
 
 import java.io.File;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements DetailAdapter.OnClickListener {
 
     public static final String KIND_PARAM = "kind";
     public static final String RECENT_PARAM = "recent";
@@ -88,7 +88,7 @@ public class DetailActivity extends AppCompatActivity {
 
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        mAdapter = new DetailAdapter(this, recent, user, recentImagesRef, picsDir);
+        mAdapter = new DetailAdapter(this, recent, user, recentImagesRef, picsDir, this);
         recyclerView.setAdapter(mAdapter);
     }
 
@@ -128,23 +128,7 @@ public class DetailActivity extends AppCompatActivity {
                 return true;
 
             case R.id.menu_bookmark:
-                recent.bookmarked = !recent.bookmarked;
-
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                
-                if(user == null) {
-                    Toast.makeText(getApplicationContext(),"Unknown Error Occurred",Toast.LENGTH_SHORT).show();
-                } else {
-                    CollectionReference recentsRef = FirebaseFirestore.getInstance().collection("users").document(user.getUid()).collection("recents");
-                    recentsRef.document(recent.id).update("bkmrkd", recent.bookmarked)
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    recent.bookmarked = !recent.bookmarked;
-                                }
-                            });
-                }
-
+                onActionPerformed(ActionCardAdapter.Action.bookmark);
                 return true;
         }
 
@@ -195,4 +179,26 @@ public class DetailActivity extends AppCompatActivity {
         finish();
     }
 
+    public void onActionPerformed(ActionCardAdapter.Action action) {
+        if(action == ActionCardAdapter.Action.bookmark) {
+            recent.bookmarked = !recent.bookmarked;
+            mAdapter.notifyBookmarkChanged(recyclerView);
+
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+            if(user == null) {
+                Toast.makeText(getApplicationContext(),"Unknown Error Occurred",Toast.LENGTH_SHORT).show();
+            } else {
+                CollectionReference recentsRef = FirebaseFirestore.getInstance().collection("users").document(user.getUid()).collection("recents");
+                recentsRef.document(recent.id).update("bkmrkd", recent.bookmarked)
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                recent.bookmarked = !recent.bookmarked;
+                                mAdapter.notifyBookmarkChanged(recyclerView);
+                            }
+                        });
+            }
+        }
+    }
 }

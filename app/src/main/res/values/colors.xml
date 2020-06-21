@@ -23,4 +23,5 @@
 
     <color name="imageBackgroud">#DEDEDE</color>
     <color name="red">#FF3B30</color>
+    <color name="blue">#007BFF</color>
 </resources>

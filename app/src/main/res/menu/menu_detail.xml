@@ -20,17 +20,15 @@
         android:icon="@drawable/ic_save_docblack_24dp"
         android:title="Save to PDF" />
 
-
+    <item
+        android:id="@+id/menu_save_image_to_photos"
+        android:icon="@drawable/ic_photo_24dp"
+        android:title="Save Image to Photos" />
 
     <item
         android:id="@+id/menu_save_map_to_photos"
         android:icon="@drawable/ic_map_24dp"
         android:title="Save Map to Photos" />
-
-    <item
-        android:id="@+id/menu_share_as_pdf"
-        android:icon="@drawable/ic_share_24dp"
-        android:title="Share as PDF" />
 
     <item
         android:id="@+id/menu_delete"

@@ -1,8 +1,6 @@
 package com.project.crop_prediction.detail;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,15 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.project.crop_prediction.R;
 import com.project.crop_prediction.model.Recent;
 
+
 public class ActionCardAdapter extends RecyclerView.Adapter<ActionCardAdapter.ActionViewHolder> {
 
-    public static final int ACTION_BOOKMARK = 0;
-    public static final int ACTION_SAVE_TO_PDF = 1;
-    public static final int ACTION_SAVE_IMAGE = 2;
-    public static final int ACTION_SAVE_MAP = 3;
-    public static final int ACTION_DELETE = 4;
-    public static final int[] actions = {ACTION_BOOKMARK, ACTION_SAVE_TO_PDF, ACTION_SAVE_IMAGE, ACTION_SAVE_MAP, ACTION_DELETE};
-
+    public static final Action[] actions = {Action.bookmark,
+            Action.saveToPDF, Action.saveImage, Action.saveMap, Action.delete};
     private final int[] actionIcons = {R.drawable.ic_bookmark_outline_24dp,
             R.drawable.ic_save_docblack_24dp, R.drawable.ic_photo_24dp,
             R.drawable.ic_map_24dp, R.drawable.ic_delete_24dp};
@@ -34,17 +28,19 @@ public class ActionCardAdapter extends RecyclerView.Adapter<ActionCardAdapter.Ac
 
     private Context context;
     private Recent recent;
+    private DetailAdapter.OnClickListener onClickListener;
 
-    public ActionCardAdapter(Context context, Recent recent) {
+    public ActionCardAdapter(Context context, Recent recent, DetailAdapter.OnClickListener onClickListener) {
         this.context = context;
         this.recent = recent;
+        this.onClickListener = onClickListener;
     }
 
     @NonNull
     @Override
     public ActionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ActionCardAdapter.ActionViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.layout_action_cell, parent, false));
+                .inflate(R.layout.layout_action_cell, parent, false), onClickListener);
     }
 
     @Override
@@ -52,8 +48,8 @@ public class ActionCardAdapter extends RecyclerView.Adapter<ActionCardAdapter.Ac
         holder.imageView.setImageResource(getIconForAction(actions[position]));
         holder.title.setText(getTitleForAction(actions[position]));
 
-        holder.title.setTextColor(context.getResources().getColor(actionColors[actions[position]]));
-        holder.imageView.setColorFilter(context.getResources().getColor(actionColors[actions[position]]));
+        holder.title.setTextColor(context.getResources().getColor(actionColors[actions[position].rawValue]));
+        holder.imageView.setColorFilter(context.getResources().getColor(actionColors[actions[position].rawValue]));
     }
 
     @Override
@@ -61,35 +57,64 @@ public class ActionCardAdapter extends RecyclerView.Adapter<ActionCardAdapter.Ac
         return actions.length;
     }
 
-    private int getIconForAction(int action) {
-        int icon = actionIcons[action];
+    private int getIconForAction(Action action) {
+        int icon = actionIcons[action.rawValue];
 
-        if(action == ACTION_BOOKMARK && recent.bookmarked)
+        if (action == Action.bookmark && recent.bookmarked)
             icon = R.drawable.ic_bookmark_24dp;
 
         return icon;
     }
 
-    private String getTitleForAction(int action) {
-        String title = actionTitles[action];
+    private String getTitleForAction(Action action) {
+        String title = actionTitles[action.rawValue];
 
-        if(action == ACTION_BOOKMARK && recent.bookmarked)
+        if (action == Action.bookmark && recent.bookmarked)
             title = "Remove from Bookmarks";
 
         return title;
     }
 
+    public void notifyBookmarkChanged() {
+        int position = -1;
 
+        for(int i = 0; i < actions.length; i++)
+            if(actions[i] == Action.bookmark)
+                position = i;
+
+        if(position == -1)
+            return;
+
+        notifyItemChanged(position);
+    }
+
+    public enum Action {
+        bookmark(0), saveToPDF(1), saveImage(2),
+        saveMap(3), delete(4);
+
+        public int rawValue;
+
+        Action(int rawValue) {
+            this.rawValue = rawValue;
+        }
+    }
 
     public class ActionViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
         public ImageView imageView;
 
-        public ActionViewHolder(View view) {
+        public ActionViewHolder(View view, final DetailAdapter.OnClickListener onClickListener) {
             super(view);
 
             title = view.findViewById(R.id.action_cell_title);
             imageView = view.findViewById(R.id.action_cell_icon);
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickListener.onActionPerformed(actions[getAdapterPosition()]);
+                }
+            });
         }
     }
 }

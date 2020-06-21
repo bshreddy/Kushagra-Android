@@ -13,8 +13,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -23,11 +21,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -43,13 +39,17 @@ import java.util.ArrayList;
 
 public class DetailAdapter extends RecyclerView.Adapter {
 
+    public interface OnClickListener {
+        void onActionPerformed(ActionCardAdapter.Action action);
+    }
+
     private static final String TAG = "DetailAdapter";
 
     private final int TYPE_IMAGE = 1;
     private final int TYPE_INFO_LIST = 2;
     private final int TYPE_MAP = 3;
     private final int TYPE_ACTION = 4;
-    private final int[] viewTypes = {TYPE_IMAGE, TYPE_INFO_LIST, TYPE_MAP};
+    private final int[] viewTypes = {TYPE_IMAGE, TYPE_INFO_LIST, TYPE_MAP, TYPE_ACTION};
 
     private FirebaseUser user;
     private StorageReference recentImagesRef;
@@ -58,9 +58,11 @@ public class DetailAdapter extends RecyclerView.Adapter {
     private Context context;
     private Recent recent;
     private CropDetails cropDetails;
+    private OnClickListener onClickListener;
 
     public DetailAdapter(Context context, Recent recent, FirebaseUser user,
-                         StorageReference recentImagesRef, File picsDir) {
+                         StorageReference recentImagesRef, File picsDir,
+                         OnClickListener onClickListener) {
         this.context = context;
         this.recent = recent;
         cropDetails = null;
@@ -68,6 +70,8 @@ public class DetailAdapter extends RecyclerView.Adapter {
         this.user = user;
         this.recentImagesRef = recentImagesRef;
         this.picsDir = picsDir;
+
+        this.onClickListener = onClickListener;
     }
 
     @Override
@@ -110,6 +114,12 @@ public class DetailAdapter extends RecyclerView.Adapter {
                 viewHolder = new MapViewHolder(context, LayoutInflater.from(parent.getContext()).
                         inflate(R.layout.layout_map_card, parent, false), recent.coordinate);
                 break;
+
+            case TYPE_ACTION:
+                viewHolder = new ActionCardViewHolder(context, LayoutInflater.from(parent.getContext()).
+                        inflate(R.layout.layout_action_card, parent, false), recent,
+                        this.onClickListener);
+                break;
         }
 
         return viewHolder;
@@ -133,19 +143,44 @@ public class DetailAdapter extends RecyclerView.Adapter {
 
                 break;
 
-            case TYPE_INFO_LIST:
-                final InfoListViewHolder listViewHolder = (InfoListViewHolder) holder;
-                break;
-
             case TYPE_MAP:
                 MapViewHolder mapViewHolder = (MapViewHolder) holder;
                 mapViewHolder.initalizeMap();
+
         }
     }
 
     @Override
     public int getItemCount() {
         return viewTypes.length;
+    }
+
+    private ArrayList<InfoCell> getInfoList() {
+        ArrayList<InfoCell> infos = new ArrayList<>();
+        infos.addAll(recent.getInfoList());
+
+        if (cropDetails != null)
+            infos.addAll(cropDetails.getInfoList());
+        return infos;
+    }
+
+    public void notifyBookmarkChanged(RecyclerView recyclerView) {
+        int position = -1;
+
+        for(int i = 0; i < viewTypes.length; i++)
+            if(viewTypes[i] == TYPE_ACTION)
+                position = i;
+
+        if(position == -1)
+            return;
+
+        ActionCardViewHolder viewHolder = (ActionCardViewHolder)recyclerView
+                .findViewHolderForAdapterPosition(position);
+
+        if(viewHolder == null)
+            return;
+
+        viewHolder.notifyBookmarkChanged();
     }
 
     private static class ImageViewHolder extends RecyclerView.ViewHolder {
@@ -160,21 +195,12 @@ public class DetailAdapter extends RecyclerView.Adapter {
 
     }
 
-    private ArrayList<InfoCell> getInfoList() {
-        ArrayList<InfoCell> infos = new ArrayList<>();
-        infos.addAll(recent.getInfoList());
-
-        if(cropDetails != null)
-            infos.addAll(cropDetails.getInfoList());
-        return infos;
-    }
-
     private static class InfoListViewHolder extends RecyclerView.ViewHolder {
 
         public RecyclerView recyclerView;
+        ArrayList<InfoCell> infos;
         private InfoListAdapter mAdapter;
         private LinearLayoutManager layoutManager;
-        ArrayList<InfoCell> infos;
 
         public InfoListViewHolder(Context context, View view, ArrayList<InfoCell> infos) {
             super(view);
@@ -247,6 +273,32 @@ public class DetailAdapter extends RecyclerView.Adapter {
 
             map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         }
+    }
+
+    public static class ActionCardViewHolder extends RecyclerView.ViewHolder {
+
+        public RecyclerView recyclerView;
+        private ActionCardAdapter mAdapter;
+        private LinearLayoutManager layoutManager;
+
+        public ActionCardViewHolder(Context context, View view, Recent recent, OnClickListener onClickListener) {
+            super(view);
+
+            recyclerView = view.findViewById(R.id.action_card_recycler);
+            layoutManager = new LinearLayoutManager(context);
+            recyclerView.setLayoutManager(layoutManager);
+            mAdapter = new ActionCardAdapter(context, recent, onClickListener);
+            recyclerView.setAdapter(mAdapter);
+            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                    layoutManager.getOrientation());
+
+            recyclerView.addItemDecoration(dividerItemDecoration);
+        }
+
+        public void notifyBookmarkChanged() {
+            mAdapter.notifyBookmarkChanged();
+        }
+
     }
 
 }
