@@ -14,6 +14,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.project.crop_prediction.R;
 import com.project.crop_prediction.network.VolleyMultipartRequest;
 import com.project.crop_prediction.network.VolleySingleton;
 
@@ -35,6 +36,7 @@ public class Prediction implements Parcelable {
         }
     };
 
+//    TODO: Convert to String Array in strings.xml
     private static String[] cropClasses = {"coffee", "cotton", "jute", "maize", "millet", "rice", "sugarcane", "tea", "tomato", "wheat"};
     private static String[] diseaseClasses = {"Apple - Apple scab", "Apple - Black rot", "Apple - Cedar apple rust", "Apple - Healthy",
             "Blueberry - Healthy", "Cherry (including sour) - Powdery mildew", "Cherry (including sour) - healthy",
@@ -46,17 +48,18 @@ public class Prediction implements Parcelable {
             "Tomato - Early blight", "Tomato - Late blight", "Tomato - Leaf Mold", "Tomato - Septoria leaf spot",
             "Tomato - Spider mites, Two-spotted spider mite", "Tomato - Target Spot", "Tomato - Tomato Yellow Leaf Curl Virus",
             "Tomato - Tomato mosaic virus", "Tomato - Healthy"};
+
+//    private static String[] cropClassesUser = {};
+
     public Bitmap image;
     public double[] confidences;
     public int predicted_idx;
     public Kind kind;
-    public String[] classes;
 
     protected Prediction(Parcel in) {
 //        image = in.readParcelable(Bitmap.class.getClassLoader());
         confidences = in.createDoubleArray();
         predicted_idx = in.readInt();
-        classes = in.createStringArray();
         kind = (Kind) in.readSerializable();
     }
 
@@ -64,7 +67,10 @@ public class Prediction implements Parcelable {
         this.predicted_idx = predicted_idx;
         this.confidences = confidences;
         this.kind = kind;
-        this.classes = (kind == Kind.crop) ? cropClasses : diseaseClasses;
+    }
+
+    private String[] getClasses() {
+        return (kind == Kind.crop) ? cropClasses : diseaseClasses;
     }
 
     public static void predict(Context context, Kind kind, final Bitmap bitmap, final PredictionListener callback) {
@@ -132,7 +138,6 @@ public class Prediction implements Parcelable {
 //        dest.writeParcelable(image, flags);
         dest.writeDoubleArray(confidences);
         dest.writeInt(predicted_idx);
-        dest.writeStringArray(classes);
         dest.writeSerializable(kind);
     }
 
@@ -142,12 +147,12 @@ public class Prediction implements Parcelable {
     }
 
     public String getPredictedClass() {
-        return classes[predicted_idx];
+        return getClasses()[predicted_idx];
     }
 
-    public String getPredictedName() {
-        String pClass = getPredictedClass();
-        return pClass.substring(0, 1).toUpperCase() + pClass.substring(1);
+    public String getPredictedName(Context context) {
+        return context.getResources().getStringArray((kind == Kind.crop) ? R.array.crop_classes :
+                R.array.disease_classes)[predicted_idx];
     }
 
     @NonNull

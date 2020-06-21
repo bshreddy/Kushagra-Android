@@ -21,8 +21,11 @@ public class ActionCardAdapter extends RecyclerView.Adapter<ActionCardAdapter.Ac
     private final int[] actionIcons = {R.drawable.ic_bookmark_outline_24dp,
             R.drawable.ic_save_docblack_24dp, R.drawable.ic_photo_24dp,
             R.drawable.ic_map_24dp, R.drawable.ic_delete_24dp};
-    private final String[] actionTitles = {"Add to Bookmarks",
-            "Save to PDF", "Save Image to Photos", "Save Map to Photos", "Delete"};
+    private final int[] actionTitles = {R.string.menu_detail_add_to_bookmarks,
+                                        R.string.menu_detial_save_to_pdf,
+                                        R.string.menu_detail_save_image_to_photos,
+                                        R.string.menu_detail_save_map_to_photos,
+                                        R.string.delete};
     private final int[] actionColors = {R.color.blue, R.color.blue, R.color.blue,
             R.color.blue, R.color.red};
 
@@ -66,11 +69,11 @@ public class ActionCardAdapter extends RecyclerView.Adapter<ActionCardAdapter.Ac
         return icon;
     }
 
-    private String getTitleForAction(Action action) {
-        String title = actionTitles[action.rawValue];
+    private int getTitleForAction(Action action) {
+        int title = actionTitles[action.rawValue];
 
         if (action == Action.bookmark && recent.bookmarked)
-            title = "Remove from Bookmarks";
+            title = R.string.menu_detail_remove_from_bookmarks;
 
         return title;
     }

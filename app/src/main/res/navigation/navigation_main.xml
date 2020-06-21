@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/navigation_crop"
         android:name="com.project.crop_prediction.ui.recents.RecentsFragment"
-        android:label="Your Crops"
+        android:label="@string/navigation_crop_title"
         tools:layout="@layout/fragment_recents">
         <argument
             android:name="kind"
@@ -18,7 +18,7 @@
     <fragment
         android:id="@+id/navigation_disease"
         android:name="com.project.crop_prediction.ui.recents.RecentsFragment"
-        android:label="Crop Diseases"
+        android:label="@string/navigation_disease_title"
         tools:layout="@layout/fragment_recents">
         <argument
             android:name="kind"

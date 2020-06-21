@@ -1,10 +1,13 @@
 package com.project.crop_prediction.model;
 
+import android.content.Context;
 import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+
+import com.project.crop_prediction.R;
 
 import java.util.ArrayList;
 
@@ -41,18 +44,15 @@ public class Coordinate implements Parcelable {
         alt = in.readDouble();
     }
 
-    public static ArrayList<InfoCell> getInfoList(Coordinate coordinate) {
+    public static ArrayList<InfoCell> getInfoList(Context context, Coordinate coordinate) {
         ArrayList<InfoCell> infos = new ArrayList<>();
 
-        if (coordinate == null) {
-            infos.add(new InfoCell("N/A", "Latitude"));
-            infos.add(new InfoCell("N/A", "Longitude"));
-            infos.add(new InfoCell("N/A", "Altitude"));
-        } else {
-            infos.add(new InfoCell(coordinate.lat + "\u00B0 N", "Latitude"));
-            infos.add(new InfoCell(coordinate.lon + "\u00B0 E", "Longitude"));
-            infos.add(new InfoCell(coordinate.alt + " m above MSE", "Altitude"));
-        }
+        infos.add(new InfoCell((coordinate == null)? context.getString(R.string.not_available):
+                coordinate.lat + "\u00B0 N", context.getString(R.string.info_subtitle_latitude)));
+        infos.add(new InfoCell((coordinate == null)? context.getString(R.string.not_available):
+                coordinate.lon + "\u00B0 E", context.getString(R.string.info_subtitle_longitude)));
+        infos.add(new InfoCell((coordinate == null)? context.getString(R.string.not_available):
+                coordinate.alt + " m above MSE", context.getString(R.string.info_subtitle_altitude)));
 
         return infos;
     }
@@ -69,8 +69,8 @@ public class Coordinate implements Parcelable {
         return 0;
     }
 
-    public ArrayList<InfoCell> getInfoList() {
-        return Coordinate.getInfoList(this);
+    public ArrayList<InfoCell> getInfoList(Context context) {
+        return Coordinate.getInfoList(context, this);
     }
 
     @NonNull
@@ -79,6 +79,7 @@ public class Coordinate implements Parcelable {
         return "Coordinate(lat: " + lat + ", lon: " + lon + ", alt: " + alt + ")";
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     enum CodingKeys {
         lat("lat"), lon("long"), alt("altitude");
 

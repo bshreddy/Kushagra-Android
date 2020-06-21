@@ -9,6 +9,7 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 
+@SuppressWarnings("HardCodedStringLiteral")
 public class PredictionDeserializer implements JsonDeserializer<Prediction> {
 
     @Override

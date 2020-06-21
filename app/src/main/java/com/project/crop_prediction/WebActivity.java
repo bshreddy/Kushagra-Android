@@ -15,7 +15,7 @@ public class WebActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
 
-        setTitle("Help");
+        setTitle(getString(R.string.help));
 
         webView = findViewById(R.id.webView);
         webView.loadUrl(helpDocURL);

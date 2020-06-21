@@ -9,6 +9,7 @@ import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
 
+@SuppressWarnings("HardCodedStringLiteral")
 public class RecentSerializer implements JsonSerializer<Recent> {
 
     private static final String TAG = "RecentSerializer";

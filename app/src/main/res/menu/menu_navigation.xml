@@ -8,18 +8,18 @@
         <item
             android:id="@+id/menu_bookmarks"
             android:icon="@drawable/ic_bookmark_24dp"
-            android:title="@string/bookmarked" />
+            android:title="@string/menu_navigation_bookmarked" />
     </group>
 
     <group android:id="@+id/menu_settings_group">
         <item
             android:id="@+id/menu_server"
             android:icon="@drawable/ic_server_24dp"
-            android:title="@string/configure_server" />
+            android:title="@string/menu_navigation_configure_server" />
         <item
             android:id="@+id/menu_settings"
             android:icon="@drawable/ic_settings_24dp"
-            android:title="@string/settings" />
+            android:title="@string/menu_navigation_settings" />
 
     </group>
 
@@ -32,7 +32,7 @@
         <item
             android:id="@+id/menu_invite"
             android:icon="@drawable/ic_invite_24dp"
-            android:title="@string/invite_a_friend" />
+            android:title="@string/menu_navigation_invite_a_friend" />
     </group>
 
     <group android:id="@+id/menu_account_options_group">
@@ -40,7 +40,7 @@
         <item
             android:id="@+id/menu_signout"
             android:icon="@drawable/ic_signout_24dp"
-            android:title="Sign Out" />
+            android:title="@string/sign_out" />
     </group>
 
 </menu>

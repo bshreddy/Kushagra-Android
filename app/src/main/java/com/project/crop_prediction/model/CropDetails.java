@@ -1,7 +1,10 @@
 package com.project.crop_prediction.model;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.project.crop_prediction.R;
 
 import java.util.ArrayList;
 
@@ -77,16 +80,23 @@ public class CropDetails implements Parcelable {
         return 0;
     }
 
-    public ArrayList<InfoCell> getInfoList() {
+    public ArrayList<InfoCell> getInfoList(Context context) {
         ArrayList<InfoCell> infos = new ArrayList<>();
 
-        infos.add(new InfoCell((typ == null) ? "N/A" : typ, "Type"));
-        infos.add(new InfoCell((techniquesUsed == null) ? "N/A" : techniquesUsed, "Techniques Used"));
-        infos.add(new InfoCell((varieties == null) ? "N/A" : varieties, "Varieties"));
-        infos.add(new InfoCell((temp == null) ? "N/A" : temp, "Temp"));
-        infos.add(new InfoCell((rainfall == null) ? "N/A" : rainfall, "Rainfall"));
-        infos.add(new InfoCell((soil == null) ? "N/A" : soil, "Soil"));
-        infos.add(new InfoCell((highestProducer == null) ? "N/A" : highestProducer, "Highest Producer"));
+        infos.add(new InfoCell((typ == null) ? context.getString(R.string.not_available) : typ,
+                context.getString(R.string.info_subtitle_type)));
+        infos.add(new InfoCell((techniquesUsed == null) ? context.getString(R.string.not_available) : techniquesUsed,
+                context.getString(R.string.info_subtitle_technique_used)));
+        infos.add(new InfoCell((varieties == null) ? context.getString(R.string.not_available) : varieties,
+                context.getString(R.string.info_subtitle_varieties)));
+        infos.add(new InfoCell((temp == null) ? context.getString(R.string.not_available) : temp,
+                context.getString(R.string.info_subtitle_temp)));
+        infos.add(new InfoCell((rainfall == null) ? context.getString(R.string.not_available) : rainfall,
+                context.getString(R.string.info_subtitle_rainfall)));
+        infos.add(new InfoCell((soil == null) ? context.getString(R.string.not_available) : soil,
+                context.getString(R.string.info_subtitle_soil)));
+        infos.add(new InfoCell((highestProducer == null) ? context.getString(R.string.not_available) : highestProducer,
+                context.getString(R.string.info_subtitle_highest_producer)));
 
 
         String str = "";
@@ -97,7 +107,7 @@ public class CropDetails implements Parcelable {
         else
             str = "N/A";
 
-        infos.add(new InfoCell(str, "Major Producers"));
+        infos.add(new InfoCell(str, context.getString(R.string.info_subtitle_major_producers)));
 
         return infos;
     }

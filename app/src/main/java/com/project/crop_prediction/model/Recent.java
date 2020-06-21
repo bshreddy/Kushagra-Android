@@ -1,5 +1,6 @@
 package com.project.crop_prediction.model;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Parcel;
@@ -8,6 +9,7 @@ import android.os.Parcelable;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.StorageReference;
+import com.project.crop_prediction.R;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,15 +60,17 @@ public class Recent implements Parcelable {
         coordinate = in.readParcelable(Coordinate.class.getClassLoader());
     }
 
-    public static ArrayList<InfoCell> getInfoList(Recent recent) {
+    public static ArrayList<InfoCell> getInfoList(Context context, Recent recent) {
         ArrayList<InfoCell> infos = new ArrayList<>();
 
         if (recent == null) {
-            infos.add(new InfoCell("N/A", "Name"));
-            infos.addAll(Coordinate.getInfoList(null));
+            infos.add(new InfoCell(context.getString(R.string.not_available),
+                    context.getString(R.string.info_subtitle_name)));
+            infos.addAll(Coordinate.getInfoList(context, null));
         } else {
-            infos.add(new InfoCell(recent.prediction.getPredictedName(), "Name"));
-            infos.addAll(recent.coordinate.getInfoList());
+            infos.add(new InfoCell(recent.prediction.getPredictedName(context),
+                    context.getString(R.string.info_subtitle_name)));
+            infos.addAll(recent.coordinate.getInfoList(context));
         }
 
         return infos;
@@ -86,8 +90,8 @@ public class Recent implements Parcelable {
         return 0;
     }
 
-    public ArrayList<InfoCell> getInfoList() {
-        return Recent.getInfoList(this);
+    public ArrayList<InfoCell> getInfoList(Context context) {
+        return Recent.getInfoList(context, this);
     }
 
     public String toString() {

@@ -57,8 +57,8 @@ public class RecentsAdapter extends RecyclerView.Adapter<RecentsAdapter.RecentsV
         holder.imageView.setImageResource(context.getResources()
                 .getIdentifier(recent.prediction.getPredictedClass(),
                         "drawable", context.getPackageName()));
-        holder.title.setText(recent.prediction.getPredictedName());
-        holder.subtitle.setText("Some Details");
+        holder.title.setText(recent.prediction.getPredictedName(context));
+        holder.subtitle.setText(context.getString(R.string.recent_card_subtitle));
         holder.bookmark.setImageResource(recent.bookmarked ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp);
 
         recent.getImage(user, recentImagesRef, picsDir, new Recent.OnImageLoadListener() {

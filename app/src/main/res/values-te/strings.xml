@@ -1,0 +1,89 @@
+<resources>
+    <string name="app_name">కుశాగ్ర</string>
+
+    <string name="title">టైటిల్</string>
+    <string name="subtitle">సబ్ టైటిల్</string>
+    <string name="save">సేవ్</string>
+    <string name="delete">తొలగించు</string>
+    <string name="cancel">రద్దు చేయు</string>
+    <string name="help">సహాయం</string>
+    <string name="sign_in">సైన్ ఇన్</string>
+    <string name="sign_out">సైన్ అవుట్</string>
+    <string name="try_again">మళ్లీ ప్రయత్నించు</string>
+
+    <!--  Common Error Message  -->
+    <string name="unknown_error_message">సాంకేతిక లోపం సంభవించింది</string>
+    <string name="camera_permission_denied">కెమెరా అనుమతి నిరాకరించబడింది</string>
+    <string name="file_read_error">డేటాను చదవడం సాధ్యం కాలేదు</string>
+
+    <string name="hello_blank_fragment">హలో ఖాళీ శకలం</string>
+
+    <!-- Navigation Drawer -->
+    <string name="navigation_drawer_open">నావిగేషన్ డ్రాయర్‌ను తెరవండి</string>
+    <string name="navigation_drawer_close">నావిగేషన్ డ్రాయర్‌ను మూసివేయండి</string>
+    <string name="navigation_header_description">నావిగేషన్ డ్రాయర్‌ను</string>
+    <string name="default_uname">యూజర్ పేరు</string>
+    <string name="default_email">user.name@argi.ai.com</string>
+    <string name="menu_navigation_bookmarked">బుక్ మార్క్</string>
+    <string name="menu_navigation_configure_server">కాన్ఫిగర్ సర్వర్‌</string>
+    <string name="menu_navigation_settings">సెట్టింగులు</string>
+    <string name="menu_navigation_invite_a_friend">స్నేహితుడిని ఆహ్వానించు</string>
+    <string name="menu_navigation_invite_a_friend_title">ద్వారా స్నేహితులను ఆహ్వానించండి</string>
+    <string name="menu_navigation_invite_a_friend_message">హే,\n\nకుషాగ్రా యాప్ AI- శక్తితో కూడిన,
+        సహజమైన అనువర్తనం, ఇది నా పంటలను, పంట వ్యాధులను గుర్తించడానికి మరియు పరిష్కారాలను పొందడానికి నేను
+        ఉపయోగిస్తాను.\n\nప్లే స్టోర్‌లో ఉచితంగా పొందండి</string>
+
+
+    <string name="navigation_crop_title">మీ పంటలు</string>
+    <string name="navigation_disease_title">పంట వ్యాధులు</string>
+
+    <!--  Server Address Debug  -->
+    <string name="debug_server_address_title">సర్వర్ చిరునామా</string>
+    <string name="debug_server_address_message">AI అనుమితి సర్వర్ యొక్క చిరునామాను నమోదు చేయండి</string>
+    <string name="debug_server_address_success">సర్వర్ చిరునామా సేవ్ చేయబడింది</string>
+    <string name="debug_server_address_error">చెల్లుబాటు అయ్యే సర్వర్ చిరునామాను నమోదు చేయండి</string>
+
+    <!--  Recent Card  -->
+    <string name="recent_card_bookmark_description">ఇటీవలి బుక్ మార్క్</string>
+    <string name="recent_card_image_view_description">ఇటీవలి కార్డ్ చిత్రం</string>
+    <string name="recent_card_subtitle">కొన్ని వివరాలు</string>
+
+    <!--  Bottom Tab Bar  -->
+    <string name="menu_bottom_crop">పంట</string>
+    <string name="menu_bottom_disease">వ్యాధి</string>
+
+    <!--  Main Activity  -->
+    <string name="sign_in_success_message">సైన్ ఇన్ విజయవంతమైంది</string>
+    <string name="sign_in_error_message">సైన్ ఇన్ చేయడం సాధ్యం కాలేదు</string>
+
+    <!--  Detail Activity  -->
+    <string name="new_crop_detection_title">కొత్త పంట గుర్తింపు</string>
+    <string name="new_disease_detection_title">కొత్త వ్యాధి గుర్తింపు</string>
+    <string name="crop_details_title">పంట వివరాలు</string>
+    <string name="disease_details_title">వ్యాధి వివరాలు</string>
+    <string name="detail_image_description">గుర్తింపు కోసం ఉపయోగించిన చిత్రం</string>
+    <string name="detail_confirm_message">మీరు ఖచ్చితంగా ఉన్నారా\?\nసేవ్ చేయాలనుకుంటున్నారా\?</string>
+
+    <!--  Detail Activity Menu  -->
+    <string name="menu_detail_add_to_bookmarks">బుక్ మార్క్ లలో చేర్చు</string>
+    <string name="menu_detail_remove_from_bookmarks">బుక్ మార్క్ నుండి తొలగించు</string>
+    <string name="menu_detial_save_to_pdf">PDF లో సేవ్ చేయండి</string>
+    <string name="menu_detail_save_image_to_photos">పంట చిత్రాన్ని ఫోటోలలో సేవ్ చేయండి</string>
+    <string name="menu_detail_save_map_to_photos">ఫోటోలలో మ్యాప్‌ను సేవ్ చేయండి</string>
+
+    <!--  Models  -->
+    <string name="not_available">అందుబాటులో లేదు</string>
+    <string name="info_subtitle_name">పేరు</string>
+    <string name="info_subtitle_latitude">అక్షాంశం</string>
+    <string name="info_subtitle_longitude">రేఖాంశం</string>
+    <string name="info_subtitle_altitude">ఎత్తు</string>
+    <string name="info_subtitle_type">వర్గం</string>
+    <string name="info_subtitle_technique_used">ఉపయోగించిన పద్ధతులు</string>
+    <string name="info_subtitle_varieties">రకాలు</string>
+    <string name="info_subtitle_temp">ఉష్ణోగ్రత</string>
+    <string name="info_subtitle_rainfall">వర్షపాతం</string>
+    <string name="info_subtitle_soil">నేల రకం</string>
+    <string name="info_subtitle_highest_producer">అత్యధిక ఉత్పత్తిదారుడు</string>
+    <string name="info_subtitle_major_producers">ప్రధాన ఉత్పత్తిదారులు</string>
+
+</resources>
