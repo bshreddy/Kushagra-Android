@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:showIn="navigation_view">
 
     <group android:id="@+id/menu_account_group">
@@ -41,7 +40,7 @@
         <item
             android:id="@+id/menu_signout"
             android:icon="@drawable/ic_signout_24dp"
-            android:title="Sign Out"/>
+            android:title="Sign Out" />
     </group>
 
 </menu>

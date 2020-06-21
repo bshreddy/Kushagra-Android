@@ -30,6 +30,7 @@
         android:ellipsize="end"
 
         android:text="Title"
+        android:textAlignment="textEnd"
         android:textColor="@android:color/black"
         android:textSize="16sp"
         app:layout_constrainedWidth="true"
@@ -37,6 +38,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/info_list_cell_subtitle"
-        app:layout_constraintTop_toTopOf="parent"
-        android:textAlignment="textEnd"/>
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

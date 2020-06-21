@@ -23,19 +23,19 @@
         android:title="Disease"
         app:showAsAction="always" />
 
-<!--    <item-->
-<!--        android:id="@+id/navigation_forum"-->
-<!--        android:enabled="true"-->
-<!--        android:icon="@drawable/ic_forum_24dp"-->
-<!--        android:title="Forum"-->
-<!--        app:showAsAction="always" />-->
+    <!--    <item-->
+    <!--        android:id="@+id/navigation_forum"-->
+    <!--        android:enabled="true"-->
+    <!--        android:icon="@drawable/ic_forum_24dp"-->
+    <!--        android:title="Forum"-->
+    <!--        app:showAsAction="always" />-->
 
-<!--    <item-->
-<!--        android:id="@+id/navigation_prices"-->
-<!--        android:enabled="true"-->
-<!--        android:icon="@drawable/ic_price_24dp"-->
-<!--        android:title="Prices"-->
-<!--        app:showAsAction="always" />-->
+    <!--    <item-->
+    <!--        android:id="@+id/navigation_prices"-->
+    <!--        android:enabled="true"-->
+    <!--        android:icon="@drawable/ic_price_24dp"-->
+    <!--        android:title="Prices"-->
+    <!--        app:showAsAction="always" />-->
 
 
 </menu>

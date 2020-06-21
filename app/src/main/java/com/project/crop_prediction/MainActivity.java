@@ -64,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ");
+
         setContentView(R.layout.activity_main);
 
         setupUI();
@@ -73,12 +75,14 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d(TAG, "onStart: ");
 
         firebaseAuth.addAuthStateListener(this);
     }
 
     @Override
     protected void onStop() {
+        Log.d(TAG, "onStop: ");
         firebaseAuth.removeAuthStateListener(this);
 
         super.onStop();

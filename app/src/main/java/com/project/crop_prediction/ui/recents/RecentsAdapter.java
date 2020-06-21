@@ -61,9 +61,9 @@ public class RecentsAdapter extends RecyclerView.Adapter<RecentsAdapter.RecentsV
         holder.subtitle.setText("Some Details");
         holder.bookmark.setImageResource(recent.bookmarked ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp);
 
-        recent.getImage(user, recentImagesRef, picsDir, new Recent.OnSuccessListener() {
+        recent.getImage(user, recentImagesRef, picsDir, new Recent.OnImageLoadListener() {
             @Override
-            public void onSuccess(Bitmap image) {
+            public void onImageLoad(Bitmap image) {
                 holder.imageView.setImageBitmap(recent.prediction.image);
             }
         });
@@ -76,6 +76,13 @@ public class RecentsAdapter extends RecyclerView.Adapter<RecentsAdapter.RecentsV
 
     public void reloadData() {
         this.notifyDataSetChanged();
+    }
+
+    public void notifyBookmarkChanged(RecyclerView recyclerView, int position) {
+        Recent recent = recents.get(position);
+        ((RecentsAdapter.RecentsViewHolder) recyclerView.findViewHolderForAdapterPosition(position))
+                .bookmark.setImageResource((recent.bookmarked ? R.drawable.ic_bookmark_24dp :
+                R.drawable.ic_bookmark_outline_24dp));
     }
 
     public interface OnClickListener {

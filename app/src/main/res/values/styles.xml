@@ -34,7 +34,7 @@
     <style name="AppTheme.ActionButton" parent="@android:style/Widget.ActionButton">
         <item name="android:drawablePadding">16dp</item>
     </style>
-    
+
     <style name="AppTheme.AlertDialogTheme" parent="ThemeOverlay.AppCompat.Dialog.Alert">
         <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
         <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>

@@ -32,6 +32,7 @@ public class Recent implements Parcelable {
     public Boolean bookmarked;
     public Date createdAt;
     public Coordinate coordinate;
+
     public Recent(String id, Prediction prediction, Boolean bookmarked, Date createdAt, Coordinate coordinate) {
         this.id = id;
         this.prediction = prediction;
@@ -94,9 +95,9 @@ public class Recent implements Parcelable {
                 ", createdAt: " + createdAt + ", coordinate: " + coordinate + ")";
     }
 
-    public void getImage(FirebaseUser user, StorageReference recentImagesRef, File picsDir, final OnSuccessListener onSuccessListener) {
+    public void getImage(FirebaseUser user, StorageReference recentImagesRef, File picsDir, final OnImageLoadListener onImageLoadListener) {
         if (prediction.image != null) {
-            onSuccessListener.onSuccess(prediction.image);
+            onImageLoadListener.onImageLoad(prediction.image);
         } else if (user != null && recentImagesRef != null) {
             final String imgName = prediction.getPredictedClass() + "/" + user.getUid() + '-' + id + ".png";
             File dir = new File(picsDir, prediction.getPredictedClass());
@@ -106,7 +107,7 @@ public class Recent implements Parcelable {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                 prediction.image = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
-                onSuccessListener.onSuccess(prediction.image);
+                onImageLoadListener.onImageLoad(prediction.image);
             } else {
                 if (!dir.exists())
                     dir.mkdirs();
@@ -121,7 +122,7 @@ public class Recent implements Parcelable {
                                     BitmapFactory.Options options = new BitmapFactory.Options();
                                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                                     prediction.image = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
-                                    onSuccessListener.onSuccess(prediction.image);
+                                    onImageLoadListener.onImageLoad(prediction.image);
                                 } catch (IOException ex) {
                                     ex.printStackTrace();
                                 }
@@ -142,7 +143,11 @@ public class Recent implements Parcelable {
         }
     }
 
-    public interface OnSuccessListener {
-        void onSuccess(Bitmap image);
+    public interface OnImageLoadListener {
+        void onImageLoad(Bitmap image);
+    }
+
+    public interface OnBookmarkUpdatedListener {
+        void onComplete(Recent recent, Exception ex);
     }
 }

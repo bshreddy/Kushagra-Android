@@ -127,9 +127,9 @@ public class DetailAdapter extends RecyclerView.Adapter {
                         .getIdentifier(recent.prediction.getPredictedClass(),
                                 "drawable", context.getPackageName()));
 
-                recent.getImage(user, recentImagesRef, picsDir, new Recent.OnSuccessListener() {
+                recent.getImage(user, recentImagesRef, picsDir, new Recent.OnImageLoadListener() {
                     @Override
-                    public void onSuccess(Bitmap image) {
+                    public void onImageLoad(Bitmap image) {
                         imgHolder.imageView.setImageBitmap(recent.prediction.image);
                     }
                 });

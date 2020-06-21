@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_main"
     app:startDestination="@id/navigation_crop">
 
@@ -9,7 +9,7 @@
         android:id="@+id/navigation_crop"
         android:name="com.project.crop_prediction.ui.recents.RecentsFragment"
         android:label="Your Crops"
-        tools:layout="@layout/fragment_recents" >
+        tools:layout="@layout/fragment_recents">
         <argument
             android:name="kind"
             android:defaultValue="crop" />
@@ -19,7 +19,7 @@
         android:id="@+id/navigation_disease"
         android:name="com.project.crop_prediction.ui.recents.RecentsFragment"
         android:label="Crop Diseases"
-        tools:layout="@layout/fragment_recents" >
+        tools:layout="@layout/fragment_recents">
         <argument
             android:name="kind"
             android:defaultValue="disease" />

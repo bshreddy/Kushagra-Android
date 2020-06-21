@@ -66,7 +66,8 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
     private static final String KIND_PARAM = "kind";
     private static final String ONLYBOOKMARK_PARAM = "bookmark";
     private static final int RC_CAPTURE = 1;
-    private static final int RC_DETAIL = 2;
+    private static final int RC_PREDICTION = 2;
+    private static final int RC_DETAIL = 3;
     private static final int RC_PERMISSIONS = 100;
 
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -125,6 +126,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: ");
         View root = inflater.inflate(R.layout.fragment_recents, container, false);
 
         recents = new ArrayList<>();
@@ -179,8 +181,14 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
         if (requestCode == RC_CAPTURE && resultCode == getActivity().RESULT_OK) {
             Log.d(TAG, "onActivityResult: ");
             getPrediction((Bitmap) data.getExtras().get("data"));
-        } else if (requestCode == RC_DETAIL && resultCode == getActivity().RESULT_OK) {
+        } else if (requestCode == RC_PREDICTION && resultCode == getActivity().RESULT_OK) {
             saveRecent((Recent) data.getExtras().getParcelable(DetailActivity.RECENT_PARAM));
+        } else if (requestCode == RC_DETAIL && resultCode == getActivity().RESULT_OK) {
+            Log.d(TAG, "onActivityResult: ");
+            Bundle extras = data.getExtras();
+            recents.set(extras.getInt(DetailActivity.POSITION_PARAM),
+                    (Recent) extras.getParcelable(DetailActivity.RECENT_PARAM));
+            mAdapter.notifyItemChanged(extras.getInt(DetailActivity.POSITION_PARAM));
         }
     }
 
@@ -228,8 +236,9 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
         Intent intent = new Intent(getContext(), DetailActivity.class);
         intent.putExtra(DetailActivity.KIND_PARAM, kind);
         intent.putExtra(DetailActivity.RECENT_PARAM, recent);
+        intent.putExtra(DetailActivity.POSITION_PARAM, position);
 
-        startActivity(intent);
+        startActivityForResult(intent, RC_DETAIL);
     }
 
     @Override
@@ -242,15 +251,17 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
         }
 
         recent.bookmarked = !recent.bookmarked;
-        ((RecentsAdapter.RecentsViewHolder) recyclerView.findViewHolderForAdapterPosition(position)).bookmark.setImageResource(
-                (recent.bookmarked ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp));
+//        ((RecentsAdapter.RecentsViewHolder) recyclerView.findViewHolderForAdapterPosition(position)).bookmark.setImageResource(
+//                (recent.bookmarked ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp));
+        mAdapter.notifyBookmarkChanged(recyclerView, position);
 
         updateBookmark(recent, new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 recent.bookmarked = !recent.bookmarked;
-                ((RecentsAdapter.RecentsViewHolder) recyclerView.findViewHolderForAdapterPosition(position)).bookmark.setImageResource(
-                        (recent.bookmarked ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp));
+//                ((RecentsAdapter.RecentsViewHolder) recyclerView.findViewHolderForAdapterPosition(position)).bookmark.setImageResource(
+//                        (recent.bookmarked ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp));
+                mAdapter.notifyBookmarkChanged(recyclerView, position);
             }
         });
 
@@ -388,7 +399,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
                                 intent.putExtra(DetailActivity.KIND_PARAM, kind);
                                 intent.putExtra(DetailActivity.ISNEW_PARAM, true);
                                 intent.putExtra(DetailActivity.RECENT_PARAM, recent);
-                                startActivityForResult(intent, RC_DETAIL);
+                                startActivityForResult(intent, RC_PREDICTION);
                                 Log.d(TAG, "onComplete: " + recent);
                             }
                         });

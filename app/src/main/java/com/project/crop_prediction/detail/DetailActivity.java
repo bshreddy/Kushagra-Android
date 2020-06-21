@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -32,8 +33,8 @@ public class DetailActivity extends AppCompatActivity implements DetailAdapter.O
 
     public static final String KIND_PARAM = "kind";
     public static final String RECENT_PARAM = "recent";
-    public static final String CROP_DETAILS_PARAM = "crop_details";
     public static final String ISNEW_PARAM = "isnew";
+    public static final String POSITION_PARAM = "idx";
     private static final String TAG = "DetailActivity";
 
     private RecyclerView recyclerView;
@@ -47,6 +48,7 @@ public class DetailActivity extends AppCompatActivity implements DetailAdapter.O
 
     private Prediction.Kind kind;
     private Recent recent;
+    private int position;
     private boolean isNew;
 
     @Override
@@ -63,6 +65,7 @@ public class DetailActivity extends AppCompatActivity implements DetailAdapter.O
         kind = (Prediction.Kind) intent.getSerializableExtra(KIND_PARAM);
         isNew = intent.getBooleanExtra(ISNEW_PARAM, false);
         recent = intent.getParcelableExtra(RECENT_PARAM);
+        position = intent.getIntExtra(POSITION_PARAM, -1);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         recentImagesRef = FirebaseStorage.getInstance().getReference().child("/images");
@@ -116,10 +119,7 @@ public class DetailActivity extends AppCompatActivity implements DetailAdapter.O
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if (isNew) {
-                    confirmCancel();
-                    return true;
-                }
+                onBackPressed();
                 break;
 
             case R.id.menu_save_prediction:
@@ -152,10 +152,18 @@ public class DetailActivity extends AppCompatActivity implements DetailAdapter.O
 
     @Override
     public void onBackPressed() {
+        Log.d(TAG, "onBackPressed: ");
         if (isNew) {
             confirmCancel();
             return;
         }
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(RECENT_PARAM, recent);
+        bundle.putInt(POSITION_PARAM, position);
+        Intent intent = new Intent();
+        intent.putExtras(bundle);
+        setResult(RESULT_OK, intent);
 
         super.onBackPressed();
     }
