@@ -16,9 +16,9 @@ public class PredictionDeserializer implements JsonDeserializer<Prediction> {
         JsonObject jsonObject = json.getAsJsonObject();
 
         JsonArray jsonConf = jsonObject.get(Prediction.CodingKeys.confidences.rawValue).getAsJsonArray();
-        double conf[] = new double[jsonConf.size()];
+        double[] conf = new double[jsonConf.size()];
 
-        for(int i = 0; i < jsonConf.size(); i++)
+        for (int i = 0; i < jsonConf.size(); i++)
             conf[i] = jsonConf.get(i).getAsDouble();
 
         return new Prediction(jsonObject.get(Prediction.CodingKeys.predicted_idx.rawValue).getAsInt(),

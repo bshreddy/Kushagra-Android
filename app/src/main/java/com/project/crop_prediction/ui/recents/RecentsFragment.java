@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -38,14 +37,13 @@ import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.project.crop_prediction.detail.DetailActivity;
 import com.project.crop_prediction.R;
+import com.project.crop_prediction.detail.DetailActivity;
 import com.project.crop_prediction.model.Coordinate;
 import com.project.crop_prediction.model.CoordinateSerializer;
 import com.project.crop_prediction.model.Prediction;
@@ -115,7 +113,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
 
-        if(!arePermissionsGranted()) {
+        if (!arePermissionsGranted()) {
             requestPermissions(new String[]{android.Manifest.permission.CAMERA,
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     android.Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -196,7 +194,7 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
                 granted = granted && (res == PackageManager.PERMISSION_GRANTED);
 
             if (granted) {
-                if(openCam) {
+                if (openCam) {
                     openCam = false;
                     startActivityForResult(new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), RC_CAPTURE);
                 }
@@ -217,10 +215,10 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
             startActivityForResult(new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), RC_CAPTURE);
         } else
             openCam = true;
-            requestPermissions(new String[]{android.Manifest.permission.CAMERA,
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION}, RC_PERMISSIONS);
+        requestPermissions(new String[]{android.Manifest.permission.CAMERA,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                android.Manifest.permission.ACCESS_FINE_LOCATION}, RC_PERMISSIONS);
     }
 
     @Override
@@ -233,27 +231,28 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
         startActivity(intent);
     }
+
     @Override
     public void onBookmarkClick(final int position) {
         final Recent recent = recents.get(position);
 
-        if(recent.id == null) {
-            Toast.makeText(getContext(),"Unknown Error",Toast.LENGTH_SHORT).show();
+        if (recent.id == null) {
+            Toast.makeText(getContext(), "Unknown Error", Toast.LENGTH_SHORT).show();
             return;
         }
 
         recent.bookmarked = !recent.bookmarked;
-        ((RecentsAdapter.RecentsViewHolder)recyclerView.findViewHolderForAdapterPosition(position)).bookmark.setImageResource(
+        ((RecentsAdapter.RecentsViewHolder) recyclerView.findViewHolderForAdapterPosition(position)).bookmark.setImageResource(
                 (recent.bookmarked ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp));
 
         updateBookmark(recent, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        recent.bookmarked = !recent.bookmarked;
-                        ((RecentsAdapter.RecentsViewHolder)recyclerView.findViewHolderForAdapterPosition(position)).bookmark.setImageResource(
-                                (recent.bookmarked ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp));
-                    }
-                });
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                recent.bookmarked = !recent.bookmarked;
+                ((RecentsAdapter.RecentsViewHolder) recyclerView.findViewHolderForAdapterPosition(position)).bookmark.setImageResource(
+                        (recent.bookmarked ? R.drawable.ic_bookmark_24dp : R.drawable.ic_bookmark_outline_24dp));
+            }
+        });
 
     }
 
@@ -278,9 +277,9 @@ public class RecentsFragment extends Fragment implements FirebaseAuth.AuthStateL
 
         swipeRefreshLayout.setRefreshing(true);
 
-        String kindFieldPath[] = {"pred", "kind"};
+        String[] kindFieldPath = {"pred", "kind"};
         Query recentQuery = null;
-        if(onlyBookmark) {
+        if (onlyBookmark) {
             // TODO: Write query for bookmarked items
         } else {
             recentQuery = recentsRef.whereEqualTo(FieldPath.of(kindFieldPath), kind.rawValue);

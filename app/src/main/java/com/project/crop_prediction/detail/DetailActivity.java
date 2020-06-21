@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -44,7 +43,7 @@ public class DetailActivity extends AppCompatActivity implements DetailAdapter.O
 
     private FirebaseUser user;
     private StorageReference recentImagesRef;
-    private  File picsDir;
+    private File picsDir;
 
     private Prediction.Kind kind;
     private Recent recent;
@@ -196,14 +195,14 @@ public class DetailActivity extends AppCompatActivity implements DetailAdapter.O
     }
 
     public void onActionPerformed(ActionCardAdapter.Action action) {
-        if(action == ActionCardAdapter.Action.bookmark) {
+        if (action == ActionCardAdapter.Action.bookmark) {
             recent.bookmarked = !recent.bookmarked;
             mAdapter.notifyBookmarkChanged(recyclerView);
 
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-            if(user == null) {
-                Toast.makeText(getApplicationContext(),"Unknown Error Occurred",Toast.LENGTH_SHORT).show();
+            if (user == null) {
+                Toast.makeText(getApplicationContext(), "Unknown Error Occurred", Toast.LENGTH_SHORT).show();
             } else {
                 CollectionReference recentsRef = FirebaseFirestore.getInstance().collection("users").document(user.getUid()).collection("recents");
                 recentsRef.document(recent.id).update("bkmrkd", recent.bookmarked)
@@ -215,13 +214,13 @@ public class DetailActivity extends AppCompatActivity implements DetailAdapter.O
                             }
                         });
             }
-        } else if(action == ActionCardAdapter.Action.saveToPDF) {
+        } else if (action == ActionCardAdapter.Action.saveToPDF) {
 //            TODO: Implement Report Rendering
-        } else if(action == ActionCardAdapter.Action.saveImage) {
+        } else if (action == ActionCardAdapter.Action.saveImage) {
 //            TODO: Save image to photos
-        } else if(action == ActionCardAdapter.Action.saveMap) {
+        } else if (action == ActionCardAdapter.Action.saveMap) {
 //            TODO: Save map snapshot to photos
-        } else if(action == ActionCardAdapter.Action.delete) {
+        } else if (action == ActionCardAdapter.Action.delete) {
 //            TODO: Delete this recent
         }
     }

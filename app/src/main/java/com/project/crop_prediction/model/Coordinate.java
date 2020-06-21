@@ -10,16 +10,17 @@ import java.util.ArrayList;
 
 public class Coordinate implements Parcelable {
 
-    enum CodingKeys {
-        lat("lat"), lon("long"), alt("altitude");
+    public static final Creator<Coordinate> CREATOR = new Creator<Coordinate>() {
+        @Override
+        public Coordinate createFromParcel(Parcel in) {
+            return new Coordinate(in);
+        }
 
-        public String rawValue;
-
-        CodingKeys(String rawValue) {
-    this.rawValue = rawValue;
-    }
-    }
-
+        @Override
+        public Coordinate[] newArray(int size) {
+            return new Coordinate[size];
+        }
+    };
     public double lat;
     public double lon;
     public double alt;
@@ -40,38 +41,10 @@ public class Coordinate implements Parcelable {
         alt = in.readDouble();
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeDouble(lat);
-        dest.writeDouble(lon);
-        dest.writeDouble(alt);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<Coordinate> CREATOR = new Creator<Coordinate>() {
-        @Override
-        public Coordinate createFromParcel(Parcel in) {
-            return new Coordinate(in);
-        }
-
-        @Override
-        public Coordinate[] newArray(int size) {
-            return new Coordinate[size];
-        }
-    };
-
-    public ArrayList<InfoCell> getInfoList() {
-        return Coordinate.getInfoList(this);
-    }
-
     public static ArrayList<InfoCell> getInfoList(Coordinate coordinate) {
         ArrayList<InfoCell> infos = new ArrayList<>();
 
-        if(coordinate == null) {
+        if (coordinate == null) {
             infos.add(new InfoCell("N/A", "Latitude"));
             infos.add(new InfoCell("N/A", "Longitude"));
             infos.add(new InfoCell("N/A", "Altitude"));
@@ -84,9 +57,35 @@ public class Coordinate implements Parcelable {
         return infos;
     }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeDouble(lat);
+        dest.writeDouble(lon);
+        dest.writeDouble(alt);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public ArrayList<InfoCell> getInfoList() {
+        return Coordinate.getInfoList(this);
+    }
+
     @NonNull
     @Override
     public String toString() {
         return "Coordinate(lat: " + lat + ", lon: " + lon + ", alt: " + alt + ")";
+    }
+
+    enum CodingKeys {
+        lat("lat"), lon("long"), alt("altitude");
+
+        public String rawValue;
+
+        CodingKeys(String rawValue) {
+            this.rawValue = rawValue;
+        }
     }
 }

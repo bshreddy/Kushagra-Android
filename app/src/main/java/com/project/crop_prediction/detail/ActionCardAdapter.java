@@ -78,11 +78,11 @@ public class ActionCardAdapter extends RecyclerView.Adapter<ActionCardAdapter.Ac
     public void notifyBookmarkChanged() {
         int position = -1;
 
-        for(int i = 0; i < actions.length; i++)
-            if(actions[i] == Action.bookmark)
+        for (int i = 0; i < actions.length; i++)
+            if (actions[i] == Action.bookmark)
                 position = i;
 
-        if(position == -1)
+        if (position == -1)
             return;
 
         notifyItemChanged(position);

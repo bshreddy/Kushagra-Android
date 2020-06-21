@@ -17,7 +17,7 @@ public class CoordinateSerializer implements JsonSerializer<Coordinate> {
     public JsonElement serialize(Coordinate src, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject jsonObject = new JsonObject();
         Log.d(TAG, "serialize: ");
-        
+
         jsonObject.addProperty(Coordinate.CodingKeys.lat.rawValue, src.lat);
         jsonObject.addProperty(Coordinate.CodingKeys.lon.rawValue, src.lon);
         jsonObject.addProperty(Coordinate.CodingKeys.alt.rawValue, src.alt);

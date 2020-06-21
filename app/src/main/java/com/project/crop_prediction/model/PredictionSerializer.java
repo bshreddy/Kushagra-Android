@@ -20,7 +20,7 @@ public class PredictionSerializer implements JsonSerializer<Prediction> {
         Log.d(TAG, "serialize: ");
 
         JsonArray jsonConf = new JsonArray();
-        for(int i = 0; i < src.confidences.length; i++)
+        for (int i = 0; i < src.confidences.length; i++)
             jsonConf.add(src.confidences[i]);
         jsonObject.add(Prediction.CodingKeys.confidences.rawValue, jsonConf);
 

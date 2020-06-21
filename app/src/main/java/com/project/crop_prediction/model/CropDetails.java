@@ -7,6 +7,17 @@ import java.util.ArrayList;
 
 public class CropDetails implements Parcelable {
 
+    public static final Creator<CropDetails> CREATOR = new Creator<CropDetails>() {
+        @Override
+        public CropDetails createFromParcel(Parcel in) {
+            return new CropDetails(in);
+        }
+
+        @Override
+        public CropDetails[] newArray(int size) {
+            return new CropDetails[size];
+        }
+    };
     public String typ;
     public String techniquesUsed;
     public String varieties;
@@ -66,18 +77,6 @@ public class CropDetails implements Parcelable {
         return 0;
     }
 
-    public static final Creator<CropDetails> CREATOR = new Creator<CropDetails>() {
-        @Override
-        public CropDetails createFromParcel(Parcel in) {
-            return new CropDetails(in);
-        }
-
-        @Override
-        public CropDetails[] newArray(int size) {
-            return new CropDetails[size];
-        }
-    };
-
     public ArrayList<InfoCell> getInfoList() {
         ArrayList<InfoCell> infos = new ArrayList<>();
 
@@ -91,8 +90,8 @@ public class CropDetails implements Parcelable {
 
 
         String str = "";
-        if(majorProducers != null)
-            for (int i = 0; i < majorProducers.length; i ++) {
+        if (majorProducers != null)
+            for (int i = 0; i < majorProducers.length; i++) {
                 str += majorProducers[i] + ((i != majorProducers.length - 1) ? ",\n" : "");
             }
         else

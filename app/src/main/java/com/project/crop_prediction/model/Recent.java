@@ -1,19 +1,12 @@
 package com.project.crop_prediction.model;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
-import com.google.android.gms.common.images.ImageManager;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
@@ -23,26 +16,22 @@ import java.util.Date;
 
 public class Recent implements Parcelable {
 
-    public interface OnSuccessListener {
-        void onSuccess(Bitmap image);
-    }
-
-    enum CodingKeys {
-        prediction("pred"), createdAt("crtdAt"), bookmarked("bkmrkd"), location("loc");
-
-        public String rawValue;
-
-        CodingKeys(String rawValue) {
-            this.rawValue = rawValue;
+    public static final Creator<Recent> CREATOR = new Creator<Recent>() {
+        @Override
+        public Recent createFromParcel(Parcel in) {
+            return new Recent(in);
         }
-    }
 
+        @Override
+        public Recent[] newArray(int size) {
+            return new Recent[size];
+        }
+    };
     public String id;
     public Prediction prediction;
     public Boolean bookmarked;
     public Date createdAt;
     public Coordinate coordinate;
-
     public Recent(String id, Prediction prediction, Boolean bookmarked, Date createdAt, Coordinate coordinate) {
         this.id = id;
         this.prediction = prediction;
@@ -68,6 +57,20 @@ public class Recent implements Parcelable {
         coordinate = in.readParcelable(Coordinate.class.getClassLoader());
     }
 
+    public static ArrayList<InfoCell> getInfoList(Recent recent) {
+        ArrayList<InfoCell> infos = new ArrayList<>();
+
+        if (recent == null) {
+            infos.add(new InfoCell("N/A", "Name"));
+            infos.addAll(Coordinate.getInfoList(null));
+        } else {
+            infos.add(new InfoCell(recent.prediction.getPredictedName(), "Name"));
+            infos.addAll(recent.coordinate.getInfoList());
+        }
+
+        return infos;
+    }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(id);
@@ -82,34 +85,8 @@ public class Recent implements Parcelable {
         return 0;
     }
 
-    public static final Creator<Recent> CREATOR = new Creator<Recent>() {
-        @Override
-        public Recent createFromParcel(Parcel in) {
-            return new Recent(in);
-        }
-
-        @Override
-        public Recent[] newArray(int size) {
-            return new Recent[size];
-        }
-    };
-
     public ArrayList<InfoCell> getInfoList() {
         return Recent.getInfoList(this);
-    }
-
-    public static ArrayList<InfoCell> getInfoList(Recent recent) {
-        ArrayList<InfoCell> infos = new ArrayList<>();
-
-        if(recent == null) {
-            infos.add(new InfoCell("N/A", "Name"));
-            infos.addAll(Coordinate.getInfoList(null));
-        } else {
-            infos.add(new InfoCell(recent.prediction.getPredictedName(), "Name"));
-            infos.addAll(recent.coordinate.getInfoList());
-        }
-
-        return infos;
     }
 
     public String toString() {
@@ -118,41 +95,54 @@ public class Recent implements Parcelable {
     }
 
     public void getImage(FirebaseUser user, StorageReference recentImagesRef, File picsDir, final OnSuccessListener onSuccessListener) {
-        if(prediction.image != null) {
+        if (prediction.image != null) {
             onSuccessListener.onSuccess(prediction.image);
-        } else if(user != null && recentImagesRef != null) {
+        } else if (user != null && recentImagesRef != null) {
             final String imgName = prediction.getPredictedClass() + "/" + user.getUid() + '-' + id + ".png";
             File dir = new File(picsDir, prediction.getPredictedClass());
             final File imageFile = new File(picsDir, imgName);
 
-            if(imageFile.exists()) {
+            if (imageFile.exists()) {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                 prediction.image = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
                 onSuccessListener.onSuccess(prediction.image);
-            }
-            else {
+            } else {
                 if (!dir.exists())
                     dir.mkdirs();
 
                 recentImagesRef.child(imgName).getFile(imageFile)
-                    .addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                            try {
-                                imageFile.createNewFile();
+                        .addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                try {
+                                    imageFile.createNewFile();
 
-                                BitmapFactory.Options options = new BitmapFactory.Options();
-                                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                                prediction.image = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
-                                onSuccessListener.onSuccess(prediction.image);
-                            } catch (IOException ex) {
-                                ex.printStackTrace();
+                                    BitmapFactory.Options options = new BitmapFactory.Options();
+                                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                                    prediction.image = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
+                                    onSuccessListener.onSuccess(prediction.image);
+                                } catch (IOException ex) {
+                                    ex.printStackTrace();
+                                }
                             }
-                        }
-                    });
+                        });
             }
 
         }
+    }
+
+    enum CodingKeys {
+        prediction("pred"), createdAt("crtdAt"), bookmarked("bkmrkd"), location("loc");
+
+        public String rawValue;
+
+        CodingKeys(String rawValue) {
+            this.rawValue = rawValue;
+        }
+    }
+
+    public interface OnSuccessListener {
+        void onSuccess(Bitmap image);
     }
 }

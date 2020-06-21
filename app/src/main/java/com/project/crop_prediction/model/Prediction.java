@@ -18,11 +18,8 @@ import com.project.crop_prediction.network.VolleyMultipartRequest;
 import com.project.crop_prediction.network.VolleySingleton;
 
 import java.io.ByteArrayOutputStream;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class Prediction implements Parcelable {
 
@@ -38,8 +35,8 @@ public class Prediction implements Parcelable {
         }
     };
 
-    private static String cropClasses[] = {"coffee", "cotton", "jute", "maize", "millet", "rice", "sugarcane", "tea", "tomato", "wheat"};
-    private static String diseaseClasses[] = {"Apple - Apple scab", "Apple - Black rot", "Apple - Cedar apple rust", "Apple - Healthy",
+    private static String[] cropClasses = {"coffee", "cotton", "jute", "maize", "millet", "rice", "sugarcane", "tea", "tomato", "wheat"};
+    private static String[] diseaseClasses = {"Apple - Apple scab", "Apple - Black rot", "Apple - Cedar apple rust", "Apple - Healthy",
             "Blueberry - Healthy", "Cherry (including sour) - Powdery mildew", "Cherry (including sour) - healthy",
             "Corn - Cercospora leaf spot Gray leaf spot", "Corn - Common rust ", "Corn - Northern Leaf Blight", "Corn - Healthy",
             "Grape - Black rot", "Grape - Esca (Black Measles)", "Grape - Leaf blight (Isariopsis Leaf Spot)", "Grape - Healthy",
@@ -50,10 +47,10 @@ public class Prediction implements Parcelable {
             "Tomato - Spider mites, Two-spotted spider mite", "Tomato - Target Spot", "Tomato - Tomato Yellow Leaf Curl Virus",
             "Tomato - Tomato mosaic virus", "Tomato - Healthy"};
     public Bitmap image;
-    public double confidences[];
+    public double[] confidences;
     public int predicted_idx;
     public Kind kind;
-    public String classes[];
+    public String[] classes;
 
     protected Prediction(Parcel in) {
 //        image = in.readParcelable(Bitmap.class.getClassLoader());
@@ -63,7 +60,7 @@ public class Prediction implements Parcelable {
         kind = (Kind) in.readSerializable();
     }
 
-    public Prediction(int predicted_idx, double confidences[], Kind kind) {
+    public Prediction(int predicted_idx, double[] confidences, Kind kind) {
         this.predicted_idx = predicted_idx;
         this.confidences = confidences;
         this.kind = kind;
@@ -115,12 +112,12 @@ public class Prediction implements Parcelable {
     }
 
     public static String getServerURL(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("defaults", context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences("defaults", Context.MODE_PRIVATE);
         return sharedPreferences.getString("ServerURL", "http://localhost:8000");
     }
 
     public static void setServerURL(Context context, String serverURL) {
-        SharedPreferences.Editor editor = context.getSharedPreferences("defaults", context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor editor = context.getSharedPreferences("defaults", Context.MODE_PRIVATE).edit();
         editor.putString("ServerURL", serverURL);
         editor.commit();
     }
@@ -164,7 +161,7 @@ public class Prediction implements Parcelable {
         return "Prediction(predicted_idx: " + predicted_idx + ", confidences" + confString + ", kind: " + kind.rawValue + ")";
     }
 
-    static enum CodingKeys {
+    enum CodingKeys {
         predicted_idx("pred"), confidences("cnf"), kind("kind");
 
         public String rawValue;

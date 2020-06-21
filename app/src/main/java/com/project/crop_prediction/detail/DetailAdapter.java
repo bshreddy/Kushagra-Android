@@ -52,6 +52,7 @@ public class DetailAdapter extends RecyclerView.Adapter {
     private Recent recent;
     private CropDetails cropDetails;
     private OnClickListener onClickListener;
+
     public DetailAdapter(Context context, Recent recent, FirebaseUser user,
                          StorageReference recentImagesRef, File picsDir,
                          OnClickListener onClickListener) {
@@ -177,7 +178,9 @@ public class DetailAdapter extends RecyclerView.Adapter {
 
     public interface OnClickListener {
         void onActionPerformed(ActionCardAdapter.Action action);
+
         void onImageClicked();
+
         void onMapClicked();
     }
 
