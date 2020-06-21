@@ -45,6 +45,7 @@
     <!--  Recent Card  -->
     <string name="recent_card_bookmark_description">Favoris récent</string>
     <string name="recent_card_image_view_description">Image de carte récente</string>
+    <string name="recent_card_subtitle">Quelques détails</string>
 
     <!--  Bottom Tab Bar  -->
     <string name="menu_bottom_crop">Culture</string>
