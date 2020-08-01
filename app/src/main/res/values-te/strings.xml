@@ -67,9 +67,9 @@
     <!--  Detail Activity Menu  -->
     <string name="menu_detail_add_to_bookmarks">బుక్ మార్క్ లలో చేర్చు</string>
     <string name="menu_detail_remove_from_bookmarks">బుక్ మార్క్ నుండి తొలగించు</string>
-    <string name="menu_detial_save_to_pdf">PDF లో సేవ్ చేయండి</string>
+    <string name="menu_detial_save_to_pdf">బుక్ మార్క్ నుండి తొలగించు</string>
     <string name="menu_detail_save_image_to_photos">పంట చిత్రాన్ని ఫోటోలలో సేవ్ చేయండి</string>
-    <string name="menu_detail_save_map_to_photos">ఫోటోలలో మ్యాప్‌ను సేవ్ చేయండి</string>
+    <string name="menu_detail_save_map_to_photos">పంట చిత్రాన్ని ఫోటోలలో సేవ్ చేయండి</string>
 
     <!--  Models  -->
     <string name="not_available">అందుబాటులో లేదు</string>
